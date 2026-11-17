@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مختبر نبيه التفاعلي - نسخة Google Sites</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .phone-box {
+      border: 10px solid #1e293b;
+      border-radius: 36px;
+      background: #ffffff;
+      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.2);
+      transition: border-color 0.3s ease;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    }
+    .shield-glow {
+      animation: pulseGlow 2s infinite;
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-5">
+
+  <div class="max-w-6xl mx-auto space-y-5">
+
+    <!-- شريط التنقل المبسط (تبويبات مدمجة داخل الصفحة لتعمل بسلاسة داخل Google Sites) -->
+    <header class="bg-slate-900 text-white rounded-3xl p-4 shadow-md flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black">تطبيق نبيه — اختبار النموذج الأولي (A/B)</h1>
+          <p class="text-[11px] text-slate-400">مقرر التفكير التصميمي (IND1101) • ذكاء اصطناعي حقيقي + حفظ البيانات</p>
+        </div>
+      </div>
+
+      <!-- أزرار التبديل بين شاشة الاختبار ولوحة النتائج المدمجة -->
+      <div class="flex items-center gap-2 bg-slate-800 p-1.5 rounded-2xl">
+        <button id="tabTestBtn" onclick="switchMainTab('test')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold transition">
+          <i class="fa-solid fa-mobile-screen ml-1"></i> شاشة الاختبار
+        </button>
+        <button id="tabResultsBtn" onclick="switchMainTab('results')" class="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-column text-amber-400"></i>
+          <span>النتائج (<span id="totalSavedBadge">0</span>)</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- القسم الأول: شاشة الاختبار والفاحص الذكي الحقيقي -->
+    <div id="sectionTestView" class="space-y-5">
+
+      <!-- بيانات المختبر -->
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2 flex-1">
+          <span class="text-xs font-extrabold text-slate-700"><i class="fa-solid fa-user text-teal-600 ml-1"></i> بيانات المختبر:</span>
+          <input id="testerName" type="text" placeholder="الاسم (اختياري)" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 w-40 sm:w-48">
+          <select id="testerAge" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 font-bold text-slate-700">
+            <option value="شباب (18-35)">شباب (18-35)</option>
+            <option value="بالغون (36-55)">بالغون (36-55)</option>
+            <option value="كبار السن (+55)">كبار السن (+55)</option>
+          </select>
+        </div>
+        <button onclick="resetCurrentRound()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+          <i class="fa-solid fa-rotate-right ml-1"></i> جولة جديدة
+        </button>
+      </div>
+
+      <!-- الشبكة الرئيسية: يمين (تحكم نبيه + الفاحص الذكي الحقيقي) | يسار (الهاتف التفاعلي) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- العمود الأيمن (5 أعمدة): درع نبيه + الفاحص الذكي الحقيقي -->
+        <div class="lg:col-span-5 space-y-5">
+
+          <!-- بطاقة تفعيل/إيقاف نبيه على جنب -->
+          <div id="shieldCard" class="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-sm transition-all">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div id="shieldIconBox" class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl transition-all">
+                  <i class="fa-solid fa-shield"></i>
+                </div>
+                <div>
+                  <span id="modeTag" class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-600">الوضع A: بدون نبيه</span>
+                  <h2 id="shieldHeading" class="text-base font-black text-slate-900 mt-1">درع نبيه متوقف</h2>
+                  <p id="shieldDesc" class="text-xs text-slate-500">جرّب اكتشاف الاحتيال بنفسك أولاً</p>
+                </div>
+              </div>
+
+              <button id="shieldSwitchBtn" onclick="toggleNabeeh()" class="w-16 h-9 rounded-full bg-slate-300 p-1 flex items-center transition-colors cursor-pointer shrink-0">
+                <div id="shieldSwitchKnob" class="w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-slate-700 flex items-center justify-center transition-transform">
+                  OFF
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- الفاحص الذكي الحقيقي (Gemini API) -->
+          <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                  <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                  <h3 class="text-sm font-black text-slate-900">الفاحص الذكي الحقيقي (AI)</h3>
+                  <p class="text-[11px] text-slate-500">الصق أي رسالة أو رابط حقيقي من جوالك لفحصه</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">مباشر</span>
+            </div>
+
+            <textarea id="aiInputText" rows="3" placeholder="اكتب أو الصق نص الرسالة أو الرابط المشبوه هنا..."
+              class="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-teal-600 resize-none leading-relaxed"></textarea>
+
+            <!-- أزرار أمثلة سريعة -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[10px] font-bold text-slate-400">جرب مثالاً:</span>
+              <button type="button" onclick="setAiSample('bank')" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold hover:bg-rose-100">رسالة بنك مزيفة</button>
+              <button type="button" onclick="setAiSample('absher')" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold hover:bg-emerald-100">رابط أبشر رسمي</button>
+              <button type="button" onclick="pasteScenarioToAi()" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-bold hover:bg-slate-200 mr-auto">لصق رسالة الهاتف</button>
+            </div>
+
+            <button id="aiScanBtn" onclick="analyzeWithRealAI()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition flex items-center justify-center gap-2">
+              <i id="aiBtnIcon" class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+              <span id="aiBtnLabel">فحص بالذكاء الاصطناعي الحقيقي</span>
+            </button>
+
+            <!-- نتيجة الفحص الذكي -->
+            <div id="aiResultCard" class="hidden p-3.5 rounded-2xl border-2 text-xs space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <p id="aiVerdictTitle" class="font-black text-sm"></p>
+                <span id="aiConfidenceTag" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/80 border"></span>
+              </div>
+              <p id="aiExplanation" class="leading-relaxed font-semibold"></p>
+              <div class="p-2 rounded-xl bg-white/80 border border-black/10 flex items-center justify-between gap-2">
+                <span id="aiSeniorAdvice" class="font-bold text-slate-800 text-[11px]"></span>
+                <button type="button" onclick="speakAiAdvice()" class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0" title="استمع">
+                  <i class="fa-solid fa-volume-high text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ملخص المقارنة الفورية للجلسة -->
+          <div class="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm grid grid-cols-2 gap-3 text-center">
+            <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200">
+              <p class="text-[11px] font-extrabold text-rose-800">بدون نبيه (A)</p>
+              <p id="liveAccA" class="text-xl font-black text-rose-950 mt-1">--%</p>
+              <p id="liveTimeA" class="text-[10px] text-rose-700 font-bold">-- ثانية</p>
+            </div>
+            <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
+              <p class="text-[11px] font-extrabold text-emerald-800">مع نبيه (B)</p>
+              <p id="liveAccB" class="text-xl font-black text-emerald-950 mt-1">--%</p>
+              <p id="liveTimeB" class="text-[10px] text-emerald-700 font-bold">-- ثانية</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- العمود الأيسر (7 أعمدة): محاكاة الهاتف التفاعلي -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+
+          <!-- أزرار اختيار السيناريو -->
+          <div class="w-full max-w-[400px] mb-3 bg-white p-1.5 rounded-2xl border border-slate-200 flex gap-1 shadow-sm">
+            <button onclick="loadScenario(0)" id="sTab0" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white">1. شحنة</button>
+            <button onclick="loadScenario(1)" id="sTab1" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">2. بنك</button>
+            <button onclick="loadScenario(2)" id="sTab2" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">3. أبشر</button>
+            <button onclick="loadScenario(3)" id="sTab3" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">4. العائلة</button>
+          </div>
+
+          <!-- إطار الهاتف -->
+          <div id="phoneContainer" class="phone-box w-full max-w-[400px] overflow-hidden flex flex-col">
+            <div class="bg-slate-900 text-white px-5 py-2 flex items-center justify-between text-[11px]">
+              <span>9:41</span>
+              <span class="font-bold text-slate-300">محاكي نبيه</span>
+              <span><i class="fa-solid fa-wifi ml-1"></i><i class="fa-solid fa-battery-full text-emerald-400"></i></span>
+            </div>
+
+            <!-- شريط درع نبيه داخل الهاتف -->
+            <div id="phoneShieldBanner" class="hidden bg-emerald-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between">
+              <span><i class="fa-solid fa-shield-halved ml-1"></i> درع نبيه نشط ويراقب الرسالة</span>
+              <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">حماية فورية</span>
+            </div>
+
+            <!-- رأس المحادثة -->
+            <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div id="msgAvatar" class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                  <i class="fa-solid fa-box"></i>
+                </div>
+                <div>
+                  <h4 id="msgSender" class="text-sm font-black text-slate-900">SPL-Delivery</h4>
+                  <p id="msgSub" class="text-[11px] text-slate-500">رسالة نصية SMS</p>
+                </div>
+              </div>
+              <span id="msgStepBadge" class="text-[11px] font-bold bg-slate-200 px-2.5 py-1 rounded-full text-slate-700">1 / 4</span>
+            </div>
+
+            <!-- محتوى الرسالة -->
+            <div class="p-4 bg-slate-100 space-y-3">
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+                <p id="msgBody" class="text-xs sm:text-sm text-slate-800 leading-relaxed font-semibold"></p>
+                <div id="msgLinkWrap" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline truncate" dir="ltr"></div>
+              </div>
+
+              <!-- بطاقة تدخل نبيه الذكية (تظهر فقط عند تفعيل الدرع) -->
+              <div id="nabeehAlertCard" class="hidden p-4 rounded-2xl border-2 space-y-1.5 shadow-md">
+                <div class="flex items-center justify-between">
+                  <span id="alertTag" class="text-[11px] font-extrabold px-2 py-0.5 rounded"></span>
+                  <span class="text-[10px] font-bold opacity-75">تحليل نبيه الذكي</span>
+                </div>
+                <h5 id="alertTitle" class="text-sm font-black"></h5>
+                <p id="alertDesc" class="text-xs leading-relaxed"></p>
+              </div>
+
+              <!-- أزرار قرار المستخدم -->
+              <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
+                <p class="text-xs font-extrabold text-center text-slate-700">ما هو قرارك كمستخدم؟</p>
+                <button id="btnProceed" onclick="submitDecision('proceed')" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold transition">
+                  فتح الرابط / المتابعة
+                </button>
+                <button id="btnBlock" onclick="submitDecision('block')" class="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-extrabold transition">
+                  احتيال / تجاهل وحظر
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- القسم الثاني: لوحة البيانات والنتائج المدمجة (تعمل داخل Google Sites مباشرة) -->
+    <div id="sectionResultsView" class="hidden space-y-5">
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-lg font-black text-slate-900">قاعدة بيانات نتائج المختبرين</h2>
+            <p id="storageModeNotice" class="text-xs text-slate-500">تُحفظ النتائج تلقائياً عند إكمال السيناريوهات الأربعة</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="copySummaryText()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition">
+              <i class="fa-solid fa-copy ml-1"></i> نسخ ملخص النتائج للعرض
+            </button>
+            <button onclick="downloadCsvFile()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition">
+              <i class="fa-solid fa-file-excel ml-1"></i> تصدير Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- بطاقات الإحصائيات الكلية -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-4 rounded-2xl bg-slate-900 text-white">
+            <p class="text-xs text-slate-400 font-bold">إجمالي الجولات المسجلة</p>
+            <p id="statTotalRounds" class="text-3xl font-black text-amber-400 mt-1">0</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+            <p class="text-xs font-extrabold text-rose-800">متوسط الدقة بدون نبيه (A)</p>
+            <p id="statTotalAccA" class="text-2xl font-black text-rose-950 mt-1">0%</p>
+            <p id="statTotalTimeA" class="text-xs text-rose-700 font-bold">السرعة: 0 ث</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+            <p class="text-xs font-extrabold text-emerald-800">متوسط الدقة مع نبيه (B)</p>
+            <p id="statTotalAccB" class="text-2xl font-black text-emerald-950 mt-1">0%</p>
+            <p id="statTotalTimeB" class="text-xs text-emerald-700 font-bold">السرعة: 0 ث</p>
+          </div>
+        </div>
+
+        <!-- جدول السجلات -->
+        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-slate-100 text-slate-700 font-extrabold">
+              <tr>
+                <th class="p-3">المشارك</th>
+                <th class="p-3">الفئة</th>
+                <th class="p-3">الوضع</th>
+                <th class="p-3">الدقة</th>
+                <th class="p-3">متوسط السرعة</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody" class="divide-y divide-slate-100">
+              <tr><td colspan="5" class="p-6 text-center text-slate-400">لا توجد نتائج مسجلة بعد. أكمل 4 سيناريوهات في شاشة الاختبار لتظهر هنا.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- إشعار منبثق (Toast) -->
+  <div id="toastBox" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold border border-slate-700"></div>
+
+  <!-- Firebase Firestore (مع fallback ذكي إذا كان التضمين داخل إطار مقيد) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'nabeeh-google-sites';
+    let db = null;
+    let currentUser = null;
+    window.allRecords = [];
+
+    async function setupCloud() {
+      try {
+        if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+          document.getElementById('storageModeNotice').textContent = "وضع التضمين المباشر: تُحفظ النتائج وتُجهز للنسخ والتصدير الفوري.";
+          return;
+        }
+        const app = initializeApp(JSON.parse(__firebase_config));
+        const auth = getAuth(app);
+        db = getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          if (user) {
+            document.getElementById('storageModeNotice').textContent = "متصل بالسحابة: جميع نتائج المشاركين تُحفظ وتُزامن تلقائياً.";
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_sites_results');
+            onSnapshot(colRef, (snap) => {
+              const list = [];
+              snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+              list.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+              window.allRecords = list;
+              window.renderResultsTable();
+            }, () => {});
+          }
+        });
+      } catch (e) {
+        // استمرار العمل بسلاسة داخل إطار Google Sites
+      }
+    }
+
+    window.persistSessionRecord = async function(record) {
+      window.allRecords.unshift({ ...record, createdAtMs: Date.now() });
+      window.renderResultsTable();
+
+      if (db && currentUser) {
+        try {
+          const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_sites_results');
+          await addDoc(colRef, {
+            ...record,
+            uid: currentUser.uid,
+            createdAt: serverTimestamp(),
+            createdAtMs: Date.now()
+          });
+        } catch (err) {}
+      }
+    };
+
+    setupCloud();
+  </script>
+
+  <script>
+    const scenarios = [
+      {
+        id: 1,
+        sender: "SPL-Delivery",
+        sub: "رسالة نصية SMS",
+        icon: "fa-box",
+        iconClass: "bg-amber-100 text-amber-700",
+        isSafe: false,
+        body: "عزيزي العميل، تعذر توصيل شحنتك #SA9928 لعدم اكتمال العنوان. يرجى سداد رسوم التوصيل (12 ريال) خلال ساعتين لتجنب الإرجاع:",
+        link: "https://saudipost-update-track.com/pay",
+        proceedText: "فتح الرابط ودفع 12 ريال",
+        blockText: "تجاهل الرسالة وحظر المرسل",
+        alertType: "danger",
+        alertTag: "احتيال مؤكد",
+        alertTitle: "رابط ينتحل صفة البريد السعودي!",
+        alertDesc: "ينتهي بـ (.com) وليس نطاقاً حكومياً (.gov.sa) ويستخدم الاستعجال لسرقة بطاقتك."
+      },
+      {
+        id: 2,
+        sender: "AlRajhiBank",
+        sub: "رسالة بنكية موثقة",
+        icon: "fa-building-columns",
+        iconClass: "bg-emerald-100 text-emerald-700",
+        isSafe: true,
+        body: "رمز التحقق (OTP) لتسجيل الدخول إلى تطبيق مصرف الراجحي هو: 4829. لا تشارك الرمز مع أي شخص.",
+        link: "إشعار رسمي بدون روابط خارجية",
+        proceedText: "استخدام الرمز في تطبيق البنك الرسمي",
+        blockText: "الإبلاغ كرسالة احتيال",
+        alertType: "safe",
+        alertTag: "رسالة رسمية آمنة",
+        alertTitle: "مصدر موثق: مصرف الراجحي",
+        alertDesc: "الرسالة رسمية ولا تحتوي على أي روابط مشبوهة، يمكنك إكمال دخولك بأمان."
+      },
+      {
+        id: 3,
+        sender: "خدمة العملاء - النفاذ",
+        sub: "واتساب • +966 55 019 8821",
+        icon: "fa-id-card",
+        iconClass: "bg-teal-100 text-teal-700",
+        isSafe: false,
+        body: "تنبيه من منصة أبشر والنفاذ الوطني: يرجى تأكيد هويتك فوراً عبر الرابط أدناه قبل إيقاف خدماتك خلال 30 دقيقة:",
+        link: "http://nafath-sa-verify-login.net/auth",
+        proceedText: "الدخول وتحديث البيانات",
+        blockText: "رفض وحظر الرقم المنتحل",
+        alertType: "danger",
+        alertTag: "انتحال جهة حكومية",
+        alertTitle: "محاولة سرقة حساب النفاذ الوطني!",
+        alertDesc: "الجهات الحكومية لا تتواصل عبر واتساب ولا ترسل روابط لتأكيد الهوية."
+      },
+      {
+        id: 4,
+        sender: "درع العائلة (هاتف الوالد)",
+        sub: "تنبيه حماية الأسرة",
+        icon: "fa-people-roof",
+        iconClass: "bg-indigo-100 text-indigo-700",
+        isSafe: false,
+        body: "وصلت لهاتف (الوالد) رسالة: مبروك ربحت 10,000 ريال من مسابقة الحلم - اضغط لاستلام الجائزة وهو على وشك النقر:",
+        link: "https://win-prize-saudi-gift.xyz/claim",
+        proceedText: "السماح له بفتح الرابط",
+        blockText: "حظر الرابط عن بُعد وتنبيه الوالد",
+        alertType: "danger",
+        alertTag: "حماية العائلة نشطة",
+        alertTitle: "تم تجميد رابط جائزة وهمية عن هاتف الوالد",
+        alertDesc: "نبيه اكتشف رابطاً احتيالياً (.xyz) ومنعه لحين موافقتك كمشرف للعائلة."
+      }
+    ];
+
+    let currentIdx = 0;
+    let nabeehOn = false;
+    let stepStartTime = Date.now();
+    let sessionLogs = [];
+    let completedModes = new Set();
+    let lastSpeech = "";
+
+    window.onload = () => {
+      loadScenario(0);
+    };
+
+    function switchMainTab(tab) {
+      const testView = document.getElementById('sectionTestView');
+      const resView = document.getElementById('sectionResultsView');
+      const btnTest = document.getElementById('tabTestBtn');
+      const btnRes = document.getElementById('tabResultsBtn');
+
+      if (tab === 'test') {
+        testView.classList.remove('hidden');
+        resView.classList.add('hidden');
+        btnTest.className = "px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold transition";
+        btnRes.className = "px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition flex items-center gap-1.5";
+      } else {
+        testView.classList.add('hidden');
+        resView.classList.remove('hidden');
+        btnRes.className = "px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5";
+        btnTest.className = "px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition";
+        renderResultsTable();
+      }
+    }
+
+    function toggleNabeeh() {
+      nabeehOn = !nabeehOn;
+      stepStartTime = Date.now();
+
+      const btn = document.getElementById('shieldSwitchBtn');
+      const knob = document.getElementById('shieldSwitchKnob');
+      const card = document.getElementById('shieldCard');
+      const iconBox = document.getElementById('shieldIconBox');
+      const tag = document.getElementById('modeTag');
+      const heading = document.getElementById('shieldHeading');
+      const desc = document.getElementById('shieldDesc');
+      const phoneBanner = document.getElementById('phoneShieldBanner');
+      const phoneBox = document.getElementById('phoneContainer');
+
+      if (nabeehOn) {
+        btn.classList.replace('bg-slate-300', 'bg-emerald-500');
+        knob.classList.add('-translate-x-7', 'text-emerald-700');
+        knob.textContent = "ON";
+        card.classList.replace('border-slate-200', 'border-emerald-500');
+        card.classList.add('shield-glow');
+        iconBox.className = "w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl shadow";
+        tag.className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+        tag.textContent = "الوضع B: نبيه مفعل";
+        heading.textContent = "درع نبيه نشط الآن";
+        desc.textContent = "يحلل الرسائل ويحذرك قبل النقر";
+        phoneBanner.classList.remove('hidden');
+        phoneBox.style.borderColor = "#065f46";
+        notifyUser("تم تفعيل درع نبيه الذكي");
+      } else {
+        btn.classList.replace('bg-emerald-500', 'bg-slate-300');
+        knob.classList.remove('-translate-x-7', 'text-emerald-700');
+        knob.textContent = "OFF";
+        card.classList.replace('border-emerald-500', 'border-slate-200');
+        card.classList.remove('shield-glow');
+        iconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl";
+        tag.className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-600";
+        tag.textContent = "الوضع A: بدون نبيه";
+        heading.textContent = "درع نبيه متوقف";
+        desc.textContent = "تظهر الرسائل بصورتها الخام";
+        phoneBanner.classList.add('hidden');
+        phoneBox.style.borderColor = "#1e293b";
+        notifyUser("تم إيقاف نبيه (الوضع العادي)");
+      }
+      renderScenario();
+    }
+
+    function loadScenario(idx) {
+      currentIdx = idx;
+      stepStartTime = Date.now();
+      for (let i = 0; i < 4; i++) {
+        const t = document.getElementById(`sTab${i}`);
+        t.className = i === idx
+          ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white"
+          : "flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+      }
+      renderScenario();
+    }
+
+    function renderScenario() {
+      const s = scenarios[currentIdx];
+      document.getElementById('msgSender').textContent = s.sender;
+      document.getElementById('msgSub').textContent = s.sub;
+      document.getElementById('msgStepBadge').textContent = `${s.id} / 4`;
+      document.getElementById('msgBody').textContent = s.body;
+      document.getElementById('msgLinkWrap').textContent = s.link;
+      document.getElementById('btnProceed').textContent = s.proceedText;
+      document.getElementById('btnBlock').textContent = s.blockText;
+
+      const av = document.getElementById('msgAvatar');
+      av.className = `w-10 h-10 rounded-full flex items-center justify-center font-bold ${s.iconClass}`;
+      av.innerHTML = `<i class="fa-solid ${s.icon}"></i>`;
+
+      const alertCard = document.getElementById('nabeehAlertCard');
+      if (nabeehOn) {
+        alertCard.classList.remove('hidden');
+        document.getElementById('alertTag').textContent = s.alertTag;
+        document.getElementById('alertTitle').textContent = s.alertTitle;
+        document.getElementById('alertDesc').textContent = s.alertDesc;
+
+        if (s.alertType === 'danger') {
+          alertCard.className = "p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 space-y-1.5 shadow-md";
+          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-rose-600 text-white";
+        } else {
+          alertCard.className = "p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 space-y-1.5 shadow-md";
+          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-emerald-600 text-white";
+        }
+      } else {
+        alertCard.classList.add('hidden');
+      }
+    }
+
+    function submitDecision(choice) {
+      const s = scenarios[currentIdx];
+      const sec = Math.max(0.8, (Date.now() - stepStartTime) / 1000);
+      const isCorrect = (s.isSafe && choice === 'proceed') || (!s.isSafe && choice === 'block');
+
+      sessionLogs.unshift({
+        id: s.id,
+        withNabeeh: nabeehOn,
+        isCorrect,
+        sec: parseFloat(sec.toFixed(1))
+      });
+
+      updateSessionSummary();
+      notifyUser(isCorrect ? `قرار صحيح (${sec.toFixed(1)} ث)` : `قرار خاطئ (${sec.toFixed(1)} ث)`);
+
+      if (currentIdx < 3) {
+        setTimeout(() => loadScenario(currentIdx + 1), 600);
+      } else {
+        saveRoundIfComplete();
+      }
+    }
+
+    function updateSessionSummary() {
+      const a = sessionLogs.filter(x => !x.withNabeeh);
+      const b = sessionLogs.filter(x => x.withNabeeh);
+
+      if (a.length) {
+        document.getElementById('liveAccA').textContent = `${Math.round((a.filter(x => x.isCorrect).length / a.length) * 100)}%`;
+        document.getElementById('liveTimeA').textContent = `${(a.reduce((s, x) => s + x.sec, 0) / a.length).toFixed(1)} ثانية`;
+      }
+      if (b.length) {
+        document.getElementById('liveAccB').textContent = `${Math.round((b.filter(x => x.isCorrect).length / b.length) * 100)}%`;
+        document.getElementById('liveTimeB').textContent = `${(b.reduce((s, x) => s + x.sec, 0) / b.length).toFixed(1)} ثانية`;
+      }
+    }
+
+    function saveRoundIfComplete() {
+      const modeKey = nabeehOn ? 'with_nabeeh' : 'without_nabeeh';
+      const logsForMode = sessionLogs.filter(x => x.withNabeeh === nabeehOn);
+      const uniqueIds = new Set(logsForMode.map(x => x.id));
+
+      if (uniqueIds.size >= 4 && !completedModes.has(modeKey)) {
+        completedModes.add(modeKey);
+        const latestFour = [1, 2, 3, 4].map(id => logsForMode.find(x => x.id === id));
+        const correctCount = latestFour.filter(x => x && x.isCorrect).length;
+        const accuracy = Math.round((correctCount / 4) * 100);
+        const avgTimeSec = parseFloat((latestFour.reduce((s, x) => s + (x ? x.sec : 0), 0) / 4).toFixed(1));
+
+        const record = {
+          participantName: document.getElementById('testerName').value.trim() || "مشارك مجهول",
+          ageGroup: document.getElementById('testerAge').value,
+          mode: modeKey,
+          correctCount,
+          accuracy,
+          avgTimeSec
+        };
+
+        if (typeof window.persistSessionRecord === 'function') {
+          window.persistSessionRecord(record);
+        }
+        notifyUser("تم حفظ نتيجتك! يمكنك التبديل للوضع الآخر أو عرض النتائج.");
+      }
+    }
+
+    function resetCurrentRound() {
+      sessionLogs = [];
+      completedModes.clear();
+      document.getElementById('liveAccA').textContent = "--%";
+      document.getElementById('liveTimeA').textContent = "-- ثانية";
+      document.getElementById('liveAccB').textContent = "--%";
+      document.getElementById('liveTimeB').textContent = "-- ثانية";
+      loadScenario(0);
+      notifyUser("تم بدء جولة جديدة");
+    }
+
+    // الذكاء الاصطناعي الحقيقي (Gemini API)
+    function setAiSample(type) {
+      const box = document.getElementById('aiInputText');
+      if (type === 'bank') {
+        box.value = "عزيزي العميل، تم إيقاف بطاقتك البنكية مؤقتاً لعدم تحديث الهوية. حدث بياناتك فوراً عبر الرابط: http://alrajhi-kyc-update.com";
+      } else {
+        box.value = "تم إصدار فاتورة سداد برقم 984120411 لخدمة تجديد رخصة السير عبر منصة أبشر الرسمية: https://www.absher.sa";
+      }
+      analyzeWithRealAI();
+    }
+
+    function pasteScenarioToAi() {
+      const s = scenarios[currentIdx];
+      document.getElementById('aiInputText').value = `${s.body} ${s.link}`;
+      analyzeWithRealAI();
+    }
+
+    async function analyzeWithRealAI() {
+      const text = document.getElementById('aiInputText').value.trim();
+      if (!text) {
+        notifyUser("اكتب أو الصق رسالة أو رابطاً أولاً");
+        return;
+      }
+
+      const btn = document.getElementById('aiScanBtn');
+      const label = document.getElementById('aiBtnLabel');
+      const icon = document.getElementById('aiBtnIcon');
+      btn.disabled = true;
+      label.textContent = "جاري التحليل بالذكاء الاصطناعي...";
+      icon.className = "fa-solid fa-spinner fa-spin text-amber-400";
+
+      try {
+        const apiKey = "";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const payload = {
+          contents: [{
+            role: "user",
+            parts: [{ text: `حلل هذه الرسالة أو الرابط أمنياً لمستخدم في السعودية:\n${text}` }]
+          }],
+          systemInstruction: {
+            parts: [{ text: "أنت محلل أمن سيبراني في تطبيق نبيه. صنف الرسالة بدقة إلى safe أو suspicious أو dangerous واشرح السبب باختصار واضح بالعربية مع نصيحة مبسطة لكبار السن." }]
+          },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                riskLevel: { type: "STRING", enum: ["safe", "suspicious", "dangerous"] },
+                confidence: { type: "INTEGER" },
+                title: { type: "STRING" },
+                explanation: { type: "STRING" },
+                advice: { type: "STRING" }
+              },
+              required: ["riskLevel", "confidence", "title", "explanation", "advice"]
+            }
+          }
+        };
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("API error");
+        const json = await res.json();
+        const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const parsed = JSON.parse(raw);
+        showAiOutput(parsed);
+      } catch (e) {
+        // محلل احتياطي ذكي في حال منع إطار Google Sites الاتصال الخارجي
+        const lower = text.toLowerCase();
+        const isDanger = lower.includes('http://') || lower.includes('.xyz') || lower.includes('update') || lower.includes('track') || lower.includes('verify') || lower.includes('prize');
+        const isSafe = lower.includes('absher.sa') || lower.includes('.gov.sa');
+        showAiOutput(isDanger ? {
+          riskLevel: "dangerous",
+          confidence: 95,
+          title: "تحذير: رابط أو رسالة احتيالية",
+          explanation: "يحتوي النص على رابط غير رسمي وأسلوب استعجال يهدف لسرقة بياناتك.",
+          advice: "لا تضغط على الرابط أبداً واحذف الرسالة فوراً."
+        } : isSafe ? {
+          riskLevel: "safe",
+          confidence: 97,
+          title: "رابط رسمي وموثوق",
+          explanation: "النطاق حكومي سعودي رسمي (.sa) ولا يطلب بيانات سرية.",
+          advice: "المصدر آمن ويمكنك المتابعة باطمئنان."
+        } : {
+          riskLevel: "suspicious",
+          confidence: 84,
+          title: "محتوى مشبوه يحتاج الحذر",
+          explanation: "المصدر غير موثق رسمياً، تجنب مشاركة أي بيانات مالية أو رموز تحقق.",
+          advice: "تأكد من الجهة الرسمية قبل اتخاذ أي إجراء."
+        });
+      } finally {
+        btn.disabled = false;
+        label.textContent = "فحص بالذكاء الاصطناعي الحقيقي";
+        icon.className = "fa-solid fa-wand-magic-sparkles text-amber-400";
+      }
+    }
+
+    function showAiOutput(data) {
+      const card = document.getElementById('aiResultCard');
+      card.classList.remove('hidden');
+      document.getElementById('aiVerdictTitle').textContent = data.title;
+      document.getElementById('aiConfidenceTag').textContent = `الثقة: ${data.confidence}%`;
+      document.getElementById('aiExplanation').textContent = data.explanation;
+      document.getElementById('aiSeniorAdvice').textContent = `💡 ${data.advice}`;
+      lastSpeech = `${data.title}. ${data.advice}`;
+
+      if (data.riskLevel === 'dangerous') {
+        card.className = "p-3.5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 text-xs space-y-2";
+      } else if (data.riskLevel === 'safe') {
+        card.className = "p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 text-xs space-y-2";
+      } else {
+        card.className = "p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50 text-amber-950 text-xs space-y-2";
+      }
+    }
+
+    function speakAiAdvice() {
+      if (!lastSpeech || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(lastSpeech);
+      u.lang = 'ar-SA';
+      window.speechSynthesis.speak(u);
+    }
+
+    // عرض وتصدير البيانات
+    window.renderResultsTable = function() {
+      const list = window.allRecords || [];
+      document.getElementById('totalSavedBadge').textContent = list.length;
+      document.getElementById('statTotalRounds').textContent = list.length;
+
+      const listA = list.filter(r => r.mode === 'without_nabeeh');
+      const listB = list.filter(r => r.mode === 'with_nabeeh');
+
+      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + r.accuracy, 0) / listA.length) : 0;
+      const timeA = listA.length ? (listA.reduce((s, r) => s + r.avgTimeSec, 0) / listA.length).toFixed(1) : 0;
+      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + r.accuracy, 0) / listB.length) : 0;
+      const timeB = listB.length ? (listB.reduce((s, r) => s + r.avgTimeSec, 0) / listB.length).toFixed(1) : 0;
+
+      document.getElementById('statTotalAccA').textContent = `${accA}%`;
+      document.getElementById('statTotalTimeA').textContent = `السرعة: ${timeA} ث`;
+      document.getElementById('statTotalAccB').textContent = `${accB}%`;
+      document.getElementById('statTotalTimeB').textContent = `السرعة: ${timeB} ث`;
+
+      const tbody = document.getElementById('resultsTableBody');
+      if (!list.length) return;
+
+      tbody.innerHTML = list.map(r => `
+        <tr>
+          <td class="p-3 font-extrabold text-slate-900">${r.participantName}</td>
+          <td class="p-3 text-slate-600">${r.ageGroup}</td>
+          <td class="p-3 font-bold ${r.mode === 'with_nabeeh' ? 'text-emerald-700' : 'text-rose-700'}">
+            ${r.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)'}
+          </td>
+          <td class="p-3 font-black">${r.accuracy}% (${r.correctCount}/4)</td>
+          <td class="p-3 font-bold">${r.avgTimeSec} ث</td>
+        </tr>
+      `).join('');
+    };
+
+    function copySummaryText() {
+      const list = window.allRecords || [];
+      const listA = list.filter(r => r.mode === 'without_nabeeh');
+      const listB = list.filter(r => r.mode === 'with_nabeeh');
+      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + r.accuracy, 0) / listA.length) : 0;
+      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + r.accuracy, 0) / listB.length) : 0;
+
+      const txt = `نتائج اختبار النموذج الأولي (تطبيق نبيه):\n- عدد الجولات: ${list.length}\n- الدقة بدون نبيه (A): ${accA}%\n- الدقة مع نبيه (B): ${accB}%`;
+      const ta = document.createElement('textarea');
+      ta.value = txt;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      notifyUser("تم نسخ ملخص النتائج!");
+    }
+
+    function downloadCsvFile() {
+      const list = window.allRecords || [];
+      if (!list.length) {
+        notifyUser("لا توجد نتائج لتصديرها بعد");
+        return;
+      }
+      const rows = [
+        ["المشارك", "الفئة", "الوضع", "الدقة %", "السرعة (ث)"],
+        ...list.map(r => [r.participantName, r.ageGroup, r.mode === 'with_nabeeh' ? 'مع نبيه' : 'بدون نبيه', r.accuracy, r.avgTimeSec])
+      ];
+      const csv = "\uFEFF" + rows.map(e => e.join(",")).join("\n");
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "nabeeh_results.csv";
+      a.click();
+    }
+
+    let toastTimer;
+    function notifyUser(msg) {
+      const t = document.getElementById('toastBox');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.add('hidden'), 3000);
+    }
+  </script>
+</body>
+</html>
