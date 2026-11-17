@@ -3,327 +3,583 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مختبر نبيه التفاعلي - نسخة Google Sites</title>
+  <title>مختبر اختبار النموذج الأولي - تطبيق نبيه (A/B Test)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
-      background-color: #f8fafc;
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #f1f5f9;
       color: #0f172a;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
     }
-    .phone-box {
-      border: 10px solid #1e293b;
-      border-radius: 36px;
+
+    .phone-frame {
+      border: 11px solid #1e293b;
+      border-radius: 42px;
       background: #ffffff;
-      box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.2);
-      transition: border-color 0.3s ease;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), inset 0 0 0 2px #334155;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+
+    .phone-notch {
+      width: 120px;
+      height: 22px;
+      background: #1e293b;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      margin: 0 auto;
     }
+
+    @keyframes shieldPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
+      50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes dangerPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+
     .shield-glow {
-      animation: pulseGlow 2s infinite;
+      animation: shieldPulse 2.2s infinite;
+    }
+
+    .danger-glow {
+      animation: dangerPulse 2s infinite;
+    }
+
+    /* وضع كبار السن داخل شاشة الهاتف */
+    .senior-mode-active #msgBody {
+      font-size: 1.15rem !important;
+      line-height: 1.85 !important;
+      font-weight: 800 !important;
+    }
+    .senior-mode-active #alertTitle {
+      font-size: 1.15rem !important;
+    }
+    .senior-mode-active #alertDesc {
+      font-size: 1rem !important;
+      line-height: 1.7 !important;
+      font-weight: 700 !important;
+    }
+    .senior-mode-active #btnProceed,
+    .senior-mode-active #btnBlock {
+      font-size: 1rem !important;
+      padding-top: 0.9rem !important;
+      padding-bottom: 0.9rem !important;
     }
   </style>
 </head>
-<body class="p-3 sm:p-5">
+<body class="min-h-screen flex flex-col">
 
-  <div class="max-w-6xl mx-auto space-y-5">
-
-    <!-- شريط التنقل المبسط (تبويبات مدمجة داخل الصفحة لتعمل بسلاسة داخل Google Sites) -->
-    <header class="bg-slate-900 text-white rounded-3xl p-4 shadow-md flex flex-wrap items-center justify-between gap-3">
+  <!-- الشريط العلوي -->
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center text-xl">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h1 class="text-base sm:text-lg font-black">تطبيق نبيه — اختبار النموذج الأولي (A/B)</h1>
-          <p class="text-[11px] text-slate-400">مقرر التفكير التصميمي (IND1101) • ذكاء اصطناعي حقيقي + حفظ البيانات</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black tracking-tight">نبيه — مختبر اختبار النموذج الأولي (A/B)</h1>
+            <span class="hidden sm:inline-block text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full font-bold">IND1101</span>
+          </div>
+          <p class="text-[11px] text-slate-400">بنك سيناريوهات متجدد عشوائياً لكل مشارك • حفظ سحابي فوري</p>
         </div>
       </div>
 
-      <!-- أزرار التبديل بين شاشة الاختبار ولوحة النتائج المدمجة -->
-      <div class="flex items-center gap-2 bg-slate-800 p-1.5 rounded-2xl">
-        <button id="tabTestBtn" onclick="switchMainTab('test')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold transition">
-          <i class="fa-solid fa-mobile-screen ml-1"></i> شاشة الاختبار
-        </button>
-        <button id="tabResultsBtn" onclick="switchMainTab('results')" class="px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition flex items-center gap-1.5">
-          <i class="fa-solid fa-chart-column text-amber-400"></i>
-          <span>النتائج (<span id="totalSavedBadge">0</span>)</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- القسم الأول: شاشة الاختبار والفاحص الذكي الحقيقي -->
-    <div id="sectionTestView" class="space-y-5">
-
-      <!-- بيانات المختبر -->
-      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-2 flex-1">
-          <span class="text-xs font-extrabold text-slate-700"><i class="fa-solid fa-user text-teal-600 ml-1"></i> بيانات المختبر:</span>
-          <input id="testerName" type="text" placeholder="الاسم (اختياري)" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 w-40 sm:w-48">
-          <select id="testerAge" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 font-bold text-slate-700">
-            <option value="شباب (18-35)">شباب (18-35)</option>
-            <option value="بالغون (36-55)">بالغون (36-55)</option>
-            <option value="كبار السن (+55)">كبار السن (+55)</option>
-          </select>
-        </div>
-        <button onclick="resetCurrentRound()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
-          <i class="fa-solid fa-rotate-right ml-1"></i> جولة جديدة
-        </button>
-      </div>
-
-      <!-- الشبكة الرئيسية: يمين (تحكم نبيه + الفاحص الذكي الحقيقي) | يسار (الهاتف التفاعلي) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-        <!-- العمود الأيمن (5 أعمدة): درع نبيه + الفاحص الذكي الحقيقي -->
-        <div class="lg:col-span-5 space-y-5">
-
-          <!-- بطاقة تفعيل/إيقاف نبيه على جنب -->
-          <div id="shieldCard" class="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-sm transition-all">
-            <div class="flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div id="shieldIconBox" class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl transition-all">
-                  <i class="fa-solid fa-shield"></i>
-                </div>
-                <div>
-                  <span id="modeTag" class="text-[11px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-600">الوضع A: بدون نبيه</span>
-                  <h2 id="shieldHeading" class="text-base font-black text-slate-900 mt-1">درع نبيه متوقف</h2>
-                  <p id="shieldDesc" class="text-xs text-slate-500">جرّب اكتشاف الاحتيال بنفسك أولاً</p>
-                </div>
-              </div>
-
-              <button id="shieldSwitchBtn" onclick="toggleNabeeh()" class="w-16 h-9 rounded-full bg-slate-300 p-1 flex items-center transition-colors cursor-pointer shrink-0">
-                <div id="shieldSwitchKnob" class="w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-slate-700 flex items-center justify-center transition-transform">
-                  OFF
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- الفاحص الذكي الحقيقي (Gemini API) -->
-          <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
-                  <i class="fa-solid fa-brain"></i>
-                </div>
-                <div>
-                  <h3 class="text-sm font-black text-slate-900">الفاحص الذكي الحقيقي (AI)</h3>
-                  <p class="text-[11px] text-slate-500">الصق أي رسالة أو رابط حقيقي من جوالك لفحصه</p>
-                </div>
-              </div>
-              <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">مباشر</span>
-            </div>
-
-            <textarea id="aiInputText" rows="3" placeholder="اكتب أو الصق نص الرسالة أو الرابط المشبوه هنا..."
-              class="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-teal-600 resize-none leading-relaxed"></textarea>
-
-            <!-- أزرار أمثلة سريعة -->
-            <div class="flex flex-wrap items-center gap-1.5">
-              <span class="text-[10px] font-bold text-slate-400">جرب مثالاً:</span>
-              <button type="button" onclick="setAiSample('bank')" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold hover:bg-rose-100">رسالة بنك مزيفة</button>
-              <button type="button" onclick="setAiSample('absher')" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold hover:bg-emerald-100">رابط أبشر رسمي</button>
-              <button type="button" onclick="pasteScenarioToAi()" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-bold hover:bg-slate-200 mr-auto">لصق رسالة الهاتف</button>
-            </div>
-
-            <button id="aiScanBtn" onclick="analyzeWithRealAI()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition flex items-center justify-center gap-2">
-              <i id="aiBtnIcon" class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-              <span id="aiBtnLabel">فحص بالذكاء الاصطناعي الحقيقي</span>
-            </button>
-
-            <!-- نتيجة الفحص الذكي -->
-            <div id="aiResultCard" class="hidden p-3.5 rounded-2xl border-2 text-xs space-y-2">
-              <div class="flex items-center justify-between gap-2">
-                <p id="aiVerdictTitle" class="font-black text-sm"></p>
-                <span id="aiConfidenceTag" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white/80 border"></span>
-              </div>
-              <p id="aiExplanation" class="leading-relaxed font-semibold"></p>
-              <div class="p-2 rounded-xl bg-white/80 border border-black/10 flex items-center justify-between gap-2">
-                <span id="aiSeniorAdvice" class="font-bold text-slate-800 text-[11px]"></span>
-                <button type="button" onclick="speakAiAdvice()" class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0" title="استمع">
-                  <i class="fa-solid fa-volume-high text-[10px]"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- ملخص المقارنة الفورية للجلسة -->
-          <div class="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm grid grid-cols-2 gap-3 text-center">
-            <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200">
-              <p class="text-[11px] font-extrabold text-rose-800">بدون نبيه (A)</p>
-              <p id="liveAccA" class="text-xl font-black text-rose-950 mt-1">--%</p>
-              <p id="liveTimeA" class="text-[10px] text-rose-700 font-bold">-- ثانية</p>
-            </div>
-            <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-              <p class="text-[11px] font-extrabold text-emerald-800">مع نبيه (B)</p>
-              <p id="liveAccB" class="text-xl font-black text-emerald-950 mt-1">--%</p>
-              <p id="liveTimeB" class="text-[10px] text-emerald-700 font-bold">-- ثانية</p>
-            </div>
-          </div>
-
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div id="cloudStatusPill" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-300">
+          <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span id="cloudStatusLabel">جاري تهيئة التخزين...</span>
         </div>
 
-        <!-- العمود الأيسر (7 أعمدة): محاكاة الهاتف التفاعلي -->
-        <div class="lg:col-span-7 flex flex-col items-center">
-
-          <!-- أزرار اختيار السيناريو -->
-          <div class="w-full max-w-[400px] mb-3 bg-white p-1.5 rounded-2xl border border-slate-200 flex gap-1 shadow-sm">
-            <button onclick="loadScenario(0)" id="sTab0" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white">1. شحنة</button>
-            <button onclick="loadScenario(1)" id="sTab1" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">2. بنك</button>
-            <button onclick="loadScenario(2)" id="sTab2" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">3. أبشر</button>
-            <button onclick="loadScenario(3)" id="sTab3" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">4. العائلة</button>
-          </div>
-
-          <!-- إطار الهاتف -->
-          <div id="phoneContainer" class="phone-box w-full max-w-[400px] overflow-hidden flex flex-col">
-            <div class="bg-slate-900 text-white px-5 py-2 flex items-center justify-between text-[11px]">
-              <span>9:41</span>
-              <span class="font-bold text-slate-300">محاكي نبيه</span>
-              <span><i class="fa-solid fa-wifi ml-1"></i><i class="fa-solid fa-battery-full text-emerald-400"></i></span>
-            </div>
-
-            <!-- شريط درع نبيه داخل الهاتف -->
-            <div id="phoneShieldBanner" class="hidden bg-emerald-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between">
-              <span><i class="fa-solid fa-shield-halved ml-1"></i> درع نبيه نشط ويراقب الرسالة</span>
-              <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">حماية فورية</span>
-            </div>
-
-            <!-- رأس المحادثة -->
-            <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-              <div class="flex items-center gap-2.5">
-                <div id="msgAvatar" class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-                  <i class="fa-solid fa-box"></i>
-                </div>
-                <div>
-                  <h4 id="msgSender" class="text-sm font-black text-slate-900">SPL-Delivery</h4>
-                  <p id="msgSub" class="text-[11px] text-slate-500">رسالة نصية SMS</p>
-                </div>
-              </div>
-              <span id="msgStepBadge" class="text-[11px] font-bold bg-slate-200 px-2.5 py-1 rounded-full text-slate-700">1 / 4</span>
-            </div>
-
-            <!-- محتوى الرسالة -->
-            <div class="p-4 bg-slate-100 space-y-3">
-              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
-                <p id="msgBody" class="text-xs sm:text-sm text-slate-800 leading-relaxed font-semibold"></p>
-                <div id="msgLinkWrap" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline truncate" dir="ltr"></div>
-              </div>
-
-              <!-- بطاقة تدخل نبيه الذكية (تظهر فقط عند تفعيل الدرع) -->
-              <div id="nabeehAlertCard" class="hidden p-4 rounded-2xl border-2 space-y-1.5 shadow-md">
-                <div class="flex items-center justify-between">
-                  <span id="alertTag" class="text-[11px] font-extrabold px-2 py-0.5 rounded"></span>
-                  <span class="text-[10px] font-bold opacity-75">تحليل نبيه الذكي</span>
-                </div>
-                <h5 id="alertTitle" class="text-sm font-black"></h5>
-                <p id="alertDesc" class="text-xs leading-relaxed"></p>
-              </div>
-
-              <!-- أزرار قرار المستخدم -->
-              <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
-                <p class="text-xs font-extrabold text-center text-slate-700">ما هو قرارك كمستخدم؟</p>
-                <button id="btnProceed" onclick="submitDecision('proceed')" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold transition">
-                  فتح الرابط / المتابعة
-                </button>
-                <button id="btnBlock" onclick="submitDecision('block')" class="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-extrabold transition">
-                  احتيال / تجاهل وحظر
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        <button onclick="openAdminPinModal()" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs sm:text-sm font-black transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-lock"></i>
+          <span>لوحة النتائج (للمشرف)</span>
+          <span id="headerTotalBadge" class="bg-slate-900 text-amber-400 text-[11px] px-2 py-0.5 rounded-full font-extrabold">0</span>
+        </button>
       </div>
     </div>
+  </header>
 
-    <!-- القسم الثاني: لوحة البيانات والنتائج المدمجة (تعمل داخل Google Sites مباشرة) -->
-    <div id="sectionResultsView" class="hidden space-y-5">
-      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+  <!-- شريط بيانات المشارك وإعداد الجولة العشوائية -->
+  <div class="bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3 flex-1">
+        <span class="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-user-check text-teal-600"></i>
+          <span>بيانات المشارك:</span>
+        </span>
+        <input id="testerName" type="text" placeholder="الاسم أو اللقب (اختياري)" class="px-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 w-44 sm:w-52">
+        <select id="testerAge" class="px-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 font-bold text-slate-700">
+          <option value="شباب (18-35)">الفئة: شباب (18-35)</option>
+          <option value="بالغون (36-55)">الفئة: بالغون (36-55)</option>
+          <option value="كبار السن (+55)">الفئة: كبار السن (+55)</option>
+          <option value="طالب جامعي">الفئة: طالب جامعي</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="hidden lg:inline text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+          <i class="fa-solid fa-shuffle text-teal-600 ml-1"></i> أسئلة عشوائية جديدة في كل جولة
+        </span>
+        <button onclick="startFreshShuffledRound(true)" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-shuffle text-amber-400"></i>
+          <span>مشارك جديد (أسئلة جديدة)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- العمود الأيمن: لوحة درع نبيه الجانبية + وضع كبار السن + التعليمات -->
+    <aside class="lg:col-span-4 space-y-5 order-1">
+
+      <!-- بطاقة التبديل الرئيسية A/B -->
+      <div id="shieldCard" class="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-md transition-all">
+        <div class="flex items-center justify-between mb-3">
+          <span id="modeTag" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">
+            الوضع A: بدون حماية نبيه
+          </span>
+          <span class="text-[11px] font-bold text-slate-400">لوحة التحكم الجانبية</span>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 my-2">
+          <div class="flex items-center gap-3">
+            <div id="shieldIconBox" class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl transition-all">
+              <i class="fa-solid fa-shield"></i>
+            </div>
+            <div>
+              <h2 id="shieldHeading" class="text-base sm:text-lg font-black text-slate-900">درع نبيه متوقف</h2>
+              <p id="shieldDesc" class="text-xs text-slate-500">تظهر الرسائل بصورتها الخام دون تنبيه</p>
+            </div>
+          </div>
+
+          <button id="shieldSwitchBtn" onclick="toggleNabeeh()" aria-label="تبديل وضع نبيه" class="w-16 h-9 rounded-full bg-slate-300 p-1 flex items-center transition-colors cursor-pointer shrink-0 shadow-inner">
+            <div id="shieldSwitchKnob" class="w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-slate-700 flex items-center justify-center transition-transform">
+              OFF
+            </div>
+          </button>
+        </div>
+
+        <!-- شريط مؤشر الحماية -->
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <div class="flex justify-between text-xs font-bold mb-1.5">
+            <span class="text-slate-600">مستوى الحماية الاستباقية:</span>
+            <span id="protectionLabel" class="text-rose-600 font-extrabold">15% (معرّض للاحتيال)</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div id="protectionFill" class="h-full bg-rose-500 transition-all duration-500 rounded-full" style="width: 15%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- خيارات إضافية عند تفعيل درع نبيه (وضع كبار السن والقراءة الصوتية) -->
+      <div id="nabeehAccessibilityCard" class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 opacity-60 pointer-events-none transition-all">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-universal-access"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-slate-900">مزايا التصميم الشامل</h3>
+              <p class="text-[11px] text-slate-500">تتفعّل تلقائياً عند تشغيل درع نبيه</p>
+            </div>
+          </div>
+          <span id="accessStatePill" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">مقفل</span>
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
           <div>
-            <h2 class="text-lg font-black text-slate-900">قاعدة بيانات نتائج المختبرين</h2>
-            <p id="storageModeNotice" class="text-xs text-slate-500">تُحفظ النتائج تلقائياً عند إكمال السيناريوهات الأربعة</p>
+            <p class="text-xs font-extrabold text-slate-800">وضع كبار السن (خط كبير)</p>
+            <p class="text-[11px] text-slate-500">تكبير النصوص والأزرار لسهولة القراءة</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="copySummaryText()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition">
-              <i class="fa-solid fa-copy ml-1"></i> نسخ ملخص النتائج للعرض
-            </button>
-            <button onclick="downloadCsvFile()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition">
-              <i class="fa-solid fa-file-excel ml-1"></i> تصدير Excel
-            </button>
+          <button id="seniorToggleBtn" onclick="toggleSeniorMode()" class="px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-extrabold transition">
+            تفعيل
+          </button>
+        </div>
+
+        <button onclick="speakCurrentNabeehAlert()" class="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-solid fa-volume-high"></i>
+          <span>قراءة تنبيه نبيه صوتياً (عربي)</span>
+        </button>
+      </div>
+
+      <!-- بطاقة خطوات الاختبار للمشارك -->
+      <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-5 shadow-md space-y-2.5">
+        <h3 class="font-extrabold text-sm text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-list-check"></i>
+          <span>خطوات التجربة للمشارك</span>
+        </h3>
+        <ol class="text-xs text-slate-300 space-y-2 leading-relaxed list-decimal pr-4">
+          <li>أكمل الـ <strong class="text-white">4 رسائل العشوائية</strong> في الوضع الحالي (<strong class="text-rose-300">بدون نبيه</strong>).</li>
+          <li>بعد الانتهاء، فعّل زر <strong class="text-emerald-400">درع نبيه (ON)</strong> بالأعلى لتصلك <strong class="text-white">4 رسائل جديدة مختلفة</strong>.</li>
+          <li>قارن بين دقة وسرعة قراراتك في الحالتين!</li>
+        </ol>
+      </div>
+
+    </aside>
+
+    <!-- العمود الأوسط: محاكاة الهاتف التفاعلي -->
+    <section class="lg:col-span-5 flex flex-col items-center order-2">
+
+      <!-- شريط التقدم والأسئلة الأربعة للجولة الحالية -->
+      <div class="w-full max-w-[400px] mb-3 bg-white p-2 rounded-2xl border border-slate-200 flex items-center justify-between gap-1.5 shadow-sm">
+        <button onclick="goToQuestion(0)" id="qTab0" class="flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white transition">سؤال 1</button>
+        <button onclick="goToQuestion(1)" id="qTab1" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 2</button>
+        <button onclick="goToQuestion(2)" id="qTab2" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 3</button>
+        <button onclick="goToQuestion(3)" id="qTab3" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 4</button>
+      </div>
+
+      <!-- إطار الهاتف -->
+      <div id="phoneContainer" class="phone-frame w-full max-w-[400px] overflow-hidden flex flex-col">
+        <!-- شريط الحالة العلوي -->
+        <div class="bg-slate-900 text-white px-5 pt-1 pb-2 flex items-center justify-between text-[11px] font-semibold">
+          <span>9:41</span>
+          <div class="phone-notch"></div>
+          <div class="flex items-center gap-1.5">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-wifi"></i>
+            <i class="fa-solid fa-battery-full text-emerald-400"></i>
           </div>
         </div>
 
-        <!-- بطاقات الإحصائيات الكلية -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div class="p-4 rounded-2xl bg-slate-900 text-white">
-            <p class="text-xs text-slate-400 font-bold">إجمالي الجولات المسجلة</p>
-            <p id="statTotalRounds" class="text-3xl font-black text-amber-400 mt-1">0</p>
+        <!-- شريط درع نبيه داخل الهاتف -->
+        <div id="phoneShieldBanner" class="hidden bg-emerald-600 text-white px-4 py-2 text-xs font-extrabold flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved animate-pulse"></i>
+            <span>نبيه نشط: يراقب الروابط والرسائل</span>
           </div>
-          <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
-            <p class="text-xs font-extrabold text-rose-800">متوسط الدقة بدون نبيه (A)</p>
-            <p id="statTotalAccA" class="text-2xl font-black text-rose-950 mt-1">0%</p>
-            <p id="statTotalTimeA" class="text-xs text-rose-700 font-bold">السرعة: 0 ث</p>
+          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">حماية فورية</span>
+        </div>
+
+        <!-- رأس المحادثة -->
+        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div id="msgAvatar" class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-base">
+              <i class="fa-solid fa-box"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 id="msgSender" class="text-sm font-black text-slate-900">SPL-Delivery</h4>
+                <span id="msgVerifiedIcon" class="hidden text-emerald-600 text-xs" title="جهة موثقة"><i class="fa-solid fa-circle-check"></i></span>
+              </div>
+              <p id="msgSub" class="text-[11px] text-slate-500">رسالة نصية SMS • الآن</p>
+            </div>
           </div>
-          <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
-            <p class="text-xs font-extrabold text-emerald-800">متوسط الدقة مع نبيه (B)</p>
-            <p id="statTotalAccB" class="text-2xl font-black text-emerald-950 mt-1">0%</p>
-            <p id="statTotalTimeB" class="text-xs text-emerald-700 font-bold">السرعة: 0 ث</p>
+
+          <!-- مؤقت حي للسؤال -->
+          <div class="flex items-center gap-1.5">
+            <span id="liveTimerBadge" class="text-[11px] font-mono font-extrabold bg-slate-200/80 text-slate-800 px-2.5 py-1 rounded-full">
+              0.0 ث
+            </span>
           </div>
         </div>
 
-        <!-- جدول السجلات -->
-        <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+        <!-- محتوى الرسالة داخل الهاتف -->
+        <div class="p-4 bg-[#eef2f6] space-y-3 flex-1 flex flex-col justify-between">
+          <div class="space-y-3">
+            <!-- فقاعة الرسالة -->
+            <div class="bg-white p-4 rounded-2xl rounded-tr-sm border border-slate-200 shadow-sm space-y-2.5">
+              <p id="msgBody" class="text-xs sm:text-sm text-slate-800 leading-relaxed font-semibold"></p>
+              <div id="msgLinkWrap" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline truncate" dir="ltr"></div>
+              <div class="text-left text-[10px] text-slate-400">الآن • <span id="qCounterText">رسالة 1 من 4</span></div>
+            </div>
+
+            <!-- بطاقة تدخل نبيه الذكية (تظهر فقط عند تفعيل الدرع) -->
+            <div id="nabeehAlertCard" class="hidden p-4 rounded-2xl border-2 space-y-2 shadow-lg transition-all">
+              <div class="flex items-center justify-between gap-2">
+                <span id="alertTag" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md"></span>
+                <button type="button" onclick="speakCurrentNabeehAlert()" class="text-[11px] font-extrabold underline flex items-center gap-1 opacity-80 hover:opacity-100">
+                  <i class="fa-solid fa-volume-high"></i> استمع
+                </button>
+              </div>
+              <h5 id="alertTitle" class="text-sm font-black"></h5>
+              <p id="alertDesc" class="text-xs leading-relaxed font-medium"></p>
+              <div id="familyGuardianRow" class="hidden pt-2 border-t border-black/10 text-[11px] font-extrabold flex items-center gap-1.5">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>تنبيه العائلة: تم إشعار المشرف العائلي لحماية كبار السن.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- أزرار اتخاذ القرار -->
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+            <p class="text-xs font-extrabold text-center text-slate-700">ما هو قرارك كمستخدم؟</p>
+            <button id="btnProceed" onclick="submitDecision('proceed')" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-check-circle"></i>
+              <span id="btnProceedText">آمن / المتابعة</span>
+            </button>
+            <button id="btnBlock" onclick="submitDecision('block')" class="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-ban text-rose-600"></i>
+              <span id="btnBlockText">احتيال / تجاهل وحظر</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- العمود الأيسر: مقارنة الأداء الحية للمشارك الحالي -->
+    <aside class="lg:col-span-3 space-y-5 order-3">
+
+      <!-- بطاقة المقارنة المباشرة A vs B -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-md space-y-3.5">
+        <h3 class="font-extrabold text-base text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-scale-balanced text-indigo-600"></i>
+          <span>نتيجتك الفورية (A vs B)</span>
+        </h3>
+
+        <div class="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-extrabold text-rose-900">بدون نبيه (A)</span>
+            <span id="liveCountA" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-rose-700 border border-rose-200">0/4</span>
+          </div>
+          <div class="flex justify-between items-baseline mt-2">
+            <div>
+              <p class="text-[11px] text-rose-700">الدقة</p>
+              <p id="liveAccA" class="text-2xl font-black text-rose-950">--%</p>
+            </div>
+            <div class="text-left">
+              <p class="text-[11px] text-rose-700">متوسط السرعة</p>
+              <p id="liveTimeA" class="text-sm font-extrabold text-rose-900">-- ث</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-extrabold text-emerald-900">مع درع نبيه (B)</span>
+            <span id="liveCountB" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-emerald-700 border border-emerald-200">0/4</span>
+          </div>
+          <div class="flex justify-between items-baseline mt-2">
+            <div>
+              <p class="text-[11px] text-emerald-700">الدقة</p>
+              <p id="liveAccB" class="text-2xl font-black text-emerald-950">--%</p>
+            </div>
+            <div class="text-left">
+              <p class="text-[11px] text-emerald-700">متوسط السرعة</p>
+              <p id="liveTimeB" class="text-sm font-extrabold text-emerald-900">-- ث</p>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="switchModeWithNewQuestions()" class="w-full py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-extrabold transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-repeat"></i>
+          <span>انتقل للوضع الآخر بأسئلة جديدة</span>
+        </button>
+      </div>
+
+      <!-- سجل قرارات الجلسة -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-md">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-extrabold text-sm text-slate-900">سجل إجاباتك</h3>
+          <span class="text-[11px] text-slate-400 font-bold">بنك من 12 سيناريو</span>
+        </div>
+        <div id="sessionLogContainer" class="space-y-2 max-h-[250px] overflow-y-auto text-xs">
+          <p class="text-slate-400 text-center py-6">ابدأ بالإجابة على الرسالة المعروضة في الهاتف!</p>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- نافذة إدخال الرمز السري للمشرف (PIN: 1234) -->
+  <div id="adminPinModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 text-xl flex items-center justify-center mx-auto">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-black text-slate-900">لوحة نتائج المشرف</h3>
+        <p class="text-xs text-slate-500 mt-1">أدخل الرمز السري لعرض قاعدة البيانات السحابية وإعدادات الربط (الرمز: <span class="font-mono font-bold text-slate-800">1234</span>)</p>
+      </div>
+      <input id="adminPinInput" type="password" maxlength="6" placeholder="••••"
+        onkeydown="if(event.key==='Enter') verifyAdminPin()"
+        class="w-full text-center tracking-widest text-xl font-black py-2.5 bg-slate-50 border-2 border-slate-300 rounded-2xl focus:outline-none focus:border-amber-500">
+      <p id="pinErrorText" class="hidden text-xs font-bold text-rose-600">الرمز السري غير صحيح!</p>
+      <div class="flex gap-2">
+        <button onclick="closeAdminPinModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">إلغاء</button>
+        <button onclick="verifyAdminPin()" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow">دخول</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة لوحة تحليلات المشرف وقاعدة البيانات السحابية -->
+  <div id="adminDashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto space-y-5">
+
+      <!-- رأس اللوحة -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-xl font-black text-slate-900">لوحة نتائج المشاركين وقاعدة التخزين</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">بيانات حية</span>
+          </div>
+          <p class="text-xs text-slate-500">تُجمع النتائج تلقائياً من كل مشارك يكمل 4 أسئلة عشوائية</p>
+        </div>
+        <button onclick="closeAdminDashboard()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- قسم إعدادات الربط السحابي الخارجي (Google Sheets Webhook) -->
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-table text-emerald-600"></i>
+            <span>ربط قاعدة بيانات Google Sheets (للاستضافة على GitHub Pages)</span>
+          </h4>
+          <span id="webhookSavedBadge" class="text-[11px] font-bold text-slate-500">اختياري</span>
+        </div>
+        <p class="text-[11px] text-slate-600 leading-relaxed">
+          لإرسال كل نتيجة مباشرة إلى جدول Google Sheets عند رفع الصفحة على GitHub، الصق رابط <strong>Apps Script Web App</strong> هنا (أو ضعه في المتغير <code class="bg-slate-200 px-1 rounded">GOOGLE_SHEET_WEBHOOK_URL</code> أعلى الكود):
+        </p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input id="googleSheetUrlInput" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/..../exec"
+            class="flex-1 px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-mono">
+          <button onclick="saveGoogleSheetWebhook()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition shrink-0">
+            حفظ الرابط
+          </button>
+        </div>
+      </div>
+
+      <!-- بطاقات الإحصائيات الكلية -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-900 text-white">
+          <p class="text-xs text-slate-400 font-bold">إجمالي الجولات المسجلة</p>
+          <p id="adminTotalRounds" class="text-3xl font-black text-amber-400 mt-1">0</p>
+          <p class="text-[11px] text-slate-400 mt-1">كل جولة = 4 أسئلة عشوائية</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+          <div class="flex justify-between items-center">
+            <p class="text-xs font-extrabold text-rose-800">بدون نبيه (A)</p>
+            <span id="adminCountA" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-rose-700">0 جولات</span>
+          </div>
+          <div class="flex justify-between items-baseline mt-2">
+            <p id="adminAccA" class="text-2xl font-black text-rose-950">0%</p>
+            <p id="adminTimeA" class="text-xs font-bold text-rose-700">0 ث</p>
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+          <div class="flex justify-between items-center">
+            <p class="text-xs font-extrabold text-emerald-800">مع درع نبيه (B)</p>
+            <span id="adminCountB" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-emerald-700">0 جولات</span>
+          </div>
+          <div class="flex justify-between items-baseline mt-2">
+            <p id="adminAccB" class="text-2xl font-black text-emerald-950">0%</p>
+            <p id="adminTimeB" class="text-xs font-bold text-emerald-700">0 ث</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- أشرطة المقارنة البصرية -->
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+        <p class="text-xs font-extrabold text-slate-800">مقارنة دقة اكتشاف الاحتيال بين الوضعين:</p>
+        <div class="space-y-2.5">
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-rose-700">بدون نبيه (A)</span>
+              <span id="barTextA" class="text-rose-950">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+              <div id="barFillA" class="h-full bg-rose-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-emerald-700">مع درع نبيه (B)</span>
+              <span id="barTextB" class="text-emerald-950">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+              <div id="barFillB" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- جدول سجل المشاركين -->
+      <div class="border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto max-h-60">
           <table class="w-full text-right text-xs">
-            <thead class="bg-slate-100 text-slate-700 font-extrabold">
+            <thead class="bg-slate-100 text-slate-700 font-extrabold border-b border-slate-200">
               <tr>
-                <th class="p-3">المشارك</th>
-                <th class="p-3">الفئة</th>
-                <th class="p-3">الوضع</th>
-                <th class="p-3">الدقة</th>
-                <th class="p-3">متوسط السرعة</th>
+                <th class="py-2.5 px-3">المشارك</th>
+                <th class="py-2.5 px-3">الفئة العمرية</th>
+                <th class="py-2.5 px-3">الوضع</th>
+                <th class="py-2.5 px-3">النتيجة</th>
+                <th class="py-2.5 px-3">متوسط السرعة</th>
+                <th class="py-2.5 px-3">التوقيت</th>
               </tr>
             </thead>
-            <tbody id="resultsTableBody" class="divide-y divide-slate-100">
-              <tr><td colspan="5" class="p-6 text-center text-slate-400">لا توجد نتائج مسجلة بعد. أكمل 4 سيناريوهات في شاشة الاختبار لتظهر هنا.</td></tr>
+            <tbody id="adminTableBody" class="divide-y divide-slate-100">
+              <tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد نتائج مسجلة بعد.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
+      <!-- أزرار التصدير والنسخ للعرض التقديمي -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <button onclick="clearAllCloudRecords()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition">
+          <i class="fa-solid fa-trash-can ml-1"></i> مسح السجلات التجريبية
+        </button>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="exportResultsCsv()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i>
+            <span>تصدير Excel (CSV)</span>
+          </button>
+          <button onclick="copySummaryReport()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-copy"></i>
+            <span>نسخ ملخص النتائج لشرائح العرض</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- إشعار منبثق (Toast) -->
-  <div id="toastBox" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold border border-slate-700"></div>
+  <div id="toastBanner" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[92%] bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3">
+    <span id="toastIcon" class="text-base"></span>
+    <p id="toastText" class="text-xs sm:text-sm font-bold flex-1"></p>
+  </div>
 
-  <!-- Firebase Firestore (مع fallback ذكي إذا كان التضمين داخل إطار مقيد) -->
+  <!-- Firebase Firestore (يعمل تلقائياً داخل المنصة ويمكن ربطه أو ربط Google Sheets عند الرفع على GitHub) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'nabeeh-google-sites';
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'nabeeh-ab-prototype';
     let db = null;
     let currentUser = null;
-    window.allRecords = [];
+    window.cloudRecords = [];
 
-    async function setupCloud() {
+    async function initCloudDatabase() {
+      const dot = document.getElementById('cloudStatusDot');
+      const label = document.getElementById('cloudStatusLabel');
+
       try {
         if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-          document.getElementById('storageModeNotice').textContent = "وضع التضمين المباشر: تُحفظ النتائج وتُجهز للنسخ والتصدير الفوري.";
+          if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+          if (label) label.textContent = "جاهز للتخزين + Google Sheets";
+          window.renderAdminDashboard();
           return;
         }
-        const app = initializeApp(JSON.parse(__firebase_config));
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         db = getFirestore(app);
 
@@ -336,144 +592,368 @@
         onAuthStateChanged(auth, (user) => {
           currentUser = user;
           if (user) {
-            document.getElementById('storageModeNotice').textContent = "متصل بالسحابة: جميع نتائج المشاركين تُحفظ وتُزامن تلقائياً.";
-            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_sites_results');
-            onSnapshot(colRef, (snap) => {
-              const list = [];
-              snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-              list.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
-              window.allRecords = list;
-              window.renderResultsTable();
+            if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+            if (label) label.textContent = "متصل بقاعدة البيانات السحابية";
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_randomized_tests');
+            onSnapshot(colRef, (snapshot) => {
+              const items = [];
+              snapshot.forEach((docSnap) => {
+                items.push({ id: docSnap.id, ...docSnap.data() });
+              });
+              items.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+              window.cloudRecords = items;
+              window.renderAdminDashboard();
             }, () => {});
           }
         });
-      } catch (e) {
-        // استمرار العمل بسلاسة داخل إطار Google Sites
+      } catch (err) {
+        if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400";
+        if (label) label.textContent = "تخزين محلي + Google Sheets";
       }
     }
 
-    window.persistSessionRecord = async function(record) {
-      window.allRecords.unshift({ ...record, createdAtMs: Date.now() });
-      window.renderResultsTable();
+    window.saveResultToCloudStorage = async function(record) {
+      const entry = { ...record, createdAtMs: Date.now() };
+      window.cloudRecords.unshift(entry);
+      window.renderAdminDashboard();
 
+      // 1. الحفظ في Firebase Firestore إذا كان متاحاً
       if (db && currentUser) {
         try {
-          const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_sites_results');
+          const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_randomized_tests');
           await addDoc(colRef, {
             ...record,
             uid: currentUser.uid,
             createdAt: serverTimestamp(),
             createdAtMs: Date.now()
           });
-        } catch (err) {}
+        } catch (e) {}
+      }
+
+      // 2. الإرسال التلقائي إلى Google Sheets Webhook إذا تم إعداده
+      const webhookUrl = window.getActiveGoogleSheetWebhook();
+      if (webhookUrl) {
+        try {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: record.participantName,
+              age: record.ageGroup,
+              mode: record.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)',
+              score: `${record.correctCount}/4 (${record.accuracy}%)`,
+              time: `${record.avgTimeSec} ث`
+            })
+          });
+        } catch (e) {}
       }
     };
 
-    setupCloud();
+    window.clearAllCloudRecords = async function() {
+      if (db && currentUser && window.cloudRecords.length > 0) {
+        for (const item of window.cloudRecords) {
+          if (item.id) {
+            try {
+              await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'nabeeh_randomized_tests', item.id));
+            } catch (e) {}
+          }
+        }
+      }
+      window.cloudRecords = [];
+      window.renderAdminDashboard();
+      window.showToast("تم مسح السجلات بنجاح.", "success");
+    };
+
+    initCloudDatabase();
   </script>
 
   <script>
-    const scenarios = [
+    // =========================================================================
+    // ضع رابط Google Apps Script Web App هنا قبل الرفع على GitHub لإرسال النتائج تلقائياً:
+    const GOOGLE_SHEET_WEBHOOK_URL = "";
+    // =========================================================================
+
+    // بنك مكون من 12 سيناريو واقعي متنوع (6 احتيال + 6 رسائل رسمية صحيحة)
+    const SCENARIO_BANK = [
       {
-        id: 1,
+        id: "sc_spl_fake",
         sender: "SPL-Delivery",
-        sub: "رسالة نصية SMS",
+        sub: "رسالة نصية SMS • الآن",
         icon: "fa-box",
-        iconClass: "bg-amber-100 text-amber-700",
+        iconBg: "bg-amber-100 text-amber-700",
         isSafe: false,
-        body: "عزيزي العميل، تعذر توصيل شحنتك #SA9928 لعدم اكتمال العنوان. يرجى سداد رسوم التوصيل (12 ريال) خلال ساعتين لتجنب الإرجاع:",
+        verified: false,
+        isFamilyAlert: false,
+        body: "عزيزي العميل، تعذر توصيل شحنتك #SA9928 لعدم اكتمال العنوان الوطني. يرجى سداد رسوم إعادة التوصيل (12 ريال) خلال ساعتين لتجنب الإرجاع:",
         link: "https://saudipost-update-track.com/pay",
         proceedText: "فتح الرابط ودفع 12 ريال",
-        blockText: "تجاهل الرسالة وحظر المرسل",
-        alertType: "danger",
-        alertTag: "احتيال مؤكد",
-        alertTitle: "رابط ينتحل صفة البريد السعودي!",
-        alertDesc: "ينتهي بـ (.com) وليس نطاقاً حكومياً (.gov.sa) ويستخدم الاستعجال لسرقة بطاقتك."
+        blockText: "احتيال / تجاهل وحظر المرسل",
+        alertTag: "احتيال مؤكد (تصيّد إلكتروني)",
+        alertTitle: "رابط مزيف ينتحل صفة البريد السعودي (سبل)",
+        alertDesc: "الرابط ينتهي بـ (.com) وليس نطاقاً رسمياً (.gov.sa)، ويستخدم الاستعجال لسرقة بيانات بطاقتك."
       },
       {
-        id: 2,
+        id: "sc_rajhi_real",
         sender: "AlRajhiBank",
-        sub: "رسالة بنكية موثقة",
+        sub: "رسالة موثقة • منذ دقيقة",
         icon: "fa-building-columns",
-        iconClass: "bg-emerald-100 text-emerald-700",
+        iconBg: "bg-emerald-100 text-emerald-700",
         isSafe: true,
-        body: "رمز التحقق (OTP) لتسجيل الدخول إلى تطبيق مصرف الراجحي هو: 4829. لا تشارك الرمز مع أي شخص.",
-        link: "إشعار رسمي بدون روابط خارجية",
-        proceedText: "استخدام الرمز في تطبيق البنك الرسمي",
-        blockText: "الإبلاغ كرسالة احتيال",
-        alertType: "safe",
-        alertTag: "رسالة رسمية آمنة",
+        verified: true,
+        isFamilyAlert: false,
+        body: "رمز التحقق (OTP) لتسجيل الدخول إلى تطبيق مصرف الراجحي هو: 4829. لا تشارك هذا الرمز مع أي شخص، موظفو البنك لن يطلبوه منك أبداً.",
+        link: "إشعار رسمي موثق (لا يحتوي على روابط خارجية)",
+        proceedText: "آمن / استخدام الرمز داخل التطبيق الرسمي",
+        blockText: "احتيال / الإبلاغ عن الرسالة",
+        alertTag: "رسالة رسمية آمنة 100%",
         alertTitle: "مصدر موثق: مصرف الراجحي",
-        alertDesc: "الرسالة رسمية ولا تحتوي على أي روابط مشبوهة، يمكنك إكمال دخولك بأمان."
+        alertDesc: "المرسل موثق والرسالة خالية من أي روابط مشبوهة وتذكّرك بحماية رمز التحقق."
       },
       {
-        id: 3,
+        id: "sc_nafath_fake",
         sender: "خدمة العملاء - النفاذ",
         sub: "واتساب • +966 55 019 8821",
         icon: "fa-id-card",
-        iconClass: "bg-teal-100 text-teal-700",
+        iconBg: "bg-teal-100 text-teal-700",
         isSafe: false,
-        body: "تنبيه من منصة أبشر والنفاذ الوطني: يرجى تأكيد هويتك فوراً عبر الرابط أدناه قبل إيقاف خدماتك خلال 30 دقيقة:",
+        verified: false,
+        isFamilyAlert: false,
+        body: "تنبيه هام من منصة أبشر والنفاذ الوطني: تم رصد محاولة دخول غير مصرح بها. يرجى تأكيد هويتك فوراً عبر الرابط قبل إيقاف خدماتك خلال 30 دقيقة:",
         link: "http://nafath-sa-verify-login.net/auth",
-        proceedText: "الدخول وتحديث البيانات",
-        blockText: "رفض وحظر الرقم المنتحل",
-        alertType: "danger",
+        proceedText: "الدخول وتحديث بيانات النفاذ",
+        blockText: "احتيال / رفض وحظر الرقم المنتحل",
         alertTag: "انتحال جهة حكومية",
-        alertTitle: "محاولة سرقة حساب النفاذ الوطني!",
-        alertDesc: "الجهات الحكومية لا تتواصل عبر واتساب ولا ترسل روابط لتأكيد الهوية."
+        alertTitle: "تحذير: محاولة سرقة حساب النفاذ الوطني!",
+        alertDesc: "الجهات الحكومية لا تتواصل عبر واتساب ولا ترسل روابط تطلب تسجيل الدخول."
       },
       {
-        id: 4,
+        id: "sc_family_prize",
         sender: "درع العائلة (هاتف الوالد)",
-        sub: "تنبيه حماية الأسرة",
+        sub: "تنبيه حماية الأسرة • عاجل",
         icon: "fa-people-roof",
-        iconClass: "bg-indigo-100 text-indigo-700",
+        iconBg: "bg-indigo-100 text-indigo-700",
         isSafe: false,
-        body: "وصلت لهاتف (الوالد) رسالة: مبروك ربحت 10,000 ريال من مسابقة الحلم - اضغط لاستلام الجائزة وهو على وشك النقر:",
+        verified: true,
+        isFamilyAlert: true,
+        body: "تنبيه من هاتف (الوالد): وصلت له رسالة واتساب بعنوان (مبروك ربحت 10,000 ريال من مسابقة الحلم - اضغط لاستلام الجائزة) وهو على وشك النقر:",
         link: "https://win-prize-saudi-gift.xyz/claim",
-        proceedText: "السماح له بفتح الرابط",
-        blockText: "حظر الرابط عن بُعد وتنبيه الوالد",
-        alertType: "danger",
+        proceedText: "السماح له بفتح رابط الجائزة",
+        blockText: "احتيال / حظر الرابط عن بُعد وتنبيه الوالد",
         alertTag: "حماية العائلة نشطة",
         alertTitle: "تم تجميد رابط جائزة وهمية عن هاتف الوالد",
-        alertDesc: "نبيه اكتشف رابطاً احتيالياً (.xyz) ومنعه لحين موافقتك كمشرف للعائلة."
+        alertDesc: "اكتشف نبيه نطاقاً احتيالياً (.xyz) ومنعه مؤقتاً لحين موافقتك كمشرف للعائلة."
+      },
+      {
+        id: "sc_muroor_fake",
+        sender: "E-Muroor-SA",
+        sub: "رسالة نصية SMS • الآن",
+        icon: "fa-car-burst",
+        iconBg: "bg-rose-100 text-rose-700",
+        isSafe: false,
+        verified: false,
+        isFamilyAlert: false,
+        body: "تم تسجيل مخالفة مرورية برقم (774120) بقيمة 150 ريال. للاستفادة من خصم 50% قبل مضاعفة الغرامة خلال 24 ساعة سدد عبر الرابط:",
+        link: "https://muroor-sadad-discount.info/pay",
+        proceedText: "فتح الرابط وسداد المخالفة",
+        blockText: "احتيال / تجاهل وحظر المرسل",
+        alertTag: "رابط سداد مزيف",
+        alertTitle: "انتحال الإدارة العامة للمرور!",
+        alertDesc: "سداد المخالفات يتم فقط عبر تطبيقات البنوك الرسمية أو منصة أبشر (.gov.sa) وليس عبر روابط (.info)."
+      },
+      {
+        id: "sc_absher_real",
+        sender: "Absher",
+        sub: "رسالة حكومية موثقة • منذ 3 دقائق",
+        icon: "fa-landmark",
+        iconBg: "bg-emerald-100 text-emerald-700",
+        isSafe: true,
+        verified: true,
+        isFamilyAlert: false,
+        body: "عزيزي المستفيد، نذكّرك بقرب انتهاء صلاحية رخصة القيادة الخاصة بك بعد 15 يوماً. يمكنك تجديدها إلكترونياً عبر الدخول لحسابك في منصة أبشر.",
+        link: "تذكير رسمي (لا يتطلب الضغط على أي رابط)",
+        proceedText: "آمن / رسالة تذكير حكومية صحيحة",
+        blockText: "احتيال / حظر المرسل",
+        alertTag: "إشعار حكومي موثق",
+        alertTitle: "رسالة تذكير رسمية من منصة أبشر",
+        alertDesc: "المرسل موثق رسمياً ولا يطلب إدخال أي بيانات بنكية أو كلمات مرور عبر رابط خارجي."
+      },
+      {
+        id: "sc_stc_fake",
+        sender: "STC-Rewards",
+        sub: "رسالة نصية SMS • الآن",
+        icon: "fa-gift",
+        iconBg: "bg-purple-100 text-purple-700",
+        isSafe: false,
+        verified: false,
+        isFamilyAlert: false,
+        body: "لديك 4,850 نقطة في برنامج قطاف ستنتهي صلاحيتها اليوم! استبدلها الآن بقسيمة شرائية بقيمة 500 ريال قبل الإلغاء:",
+        link: "http://qitaf-stc-redeem-sa.com/points",
+        proceedText: "استبدال النقاط عبر الرابط",
+        blockText: "احتيال / تجاهل وحظر الرسالة",
+        alertTag: "احتيال استبدال النقاط",
+        alertTitle: "موقع مزيف لسرقة بيانات الدخول!",
+        alertDesc: "نقاط قطاف تُستبدل حصراً من داخل تطبيق mystc الرسمي، والرابط المرفق غير مشفر ومزيف."
+      },
+      {
+        id: "sc_sadad_real",
+        sender: "SNB-AlAhli",
+        sub: "إشعار بنكي موثق • الآن",
+        icon: "fa-receipt",
+        iconBg: "bg-emerald-100 text-emerald-700",
+        isSafe: true,
+        verified: true,
+        isFamilyAlert: false,
+        body: "عملية شراء عبر مدى: مبلغ 85.00 ريال لدى (أسواق التميمي) ببطاقة تنتهي بـ 4410. الرصيد المتاح: 3,420.50 ريال.",
+        link: "إشعار عملية بنكية موثقة",
+        proceedText: "آمن / إشعار عملية شراء صحيحة",
+        blockText: "احتيال / الإبلاغ كرسالة مزيفة",
+        alertTag: "إشعار بنكي موثق",
+        alertTitle: "إشعار خصم رسمي من البنك الأهلي",
+        alertDesc: "رسالة إعلامية موثقة من البنك لا تحتوي على روابط مشبوهة ولا تطلب أي إجراء."
+      },
+      {
+        id: "sc_crypto_fake",
+        sender: "مجموعة الأسهم الذهبية VIP",
+        sub: "واتساب • رقم دولي +44 7911 1234",
+        icon: "fa-chart-line",
+        iconBg: "bg-amber-100 text-amber-700",
+        isSafe: false,
+        verified: false,
+        isFamilyAlert: false,
+        body: "فرصة استثمارية مضمونة! ابدأ بمبلغ 500 ريال فقط واحصل على أرباح يومية 35% بإدارة خبراء معتمدين. سجل محفظتك الآن:",
+        link: "https://saudi-wealth-invest-pro.vip/register",
+        proceedText: "التسجيل وبدء الاستثمار",
+        blockText: "احتيال / خروج وحظر المجموعة",
+        alertTag: "احتيال مالي واستثماري",
+        alertTitle: "تحذير: منصة استثمار وهمية غير مرخصة!",
+        alertDesc: "الوعود بأرباح يومية ثابتة من أرقام دولية هي أسلوب احتيال مالي معروف لسرقة التحويلات."
+      },
+      {
+        id: "sc_noon_real",
+        sender: "noon",
+        sub: "واتساب موثق بعلامة خضراء • الآن",
+        icon: "fa-bag-shopping",
+        iconBg: "bg-yellow-100 text-yellow-700",
+        isSafe: true,
+        verified: true,
+        isFamilyAlert: false,
+        body: "تم شحن طلبك رقم #NSA88210 بنجاح! مندوب التوصيل سيتواصل معك اليوم بين الساعة 4:00 م و 7:00 م. يمكنك متابعة الطلب من داخل تطبيق نون.",
+        link: "إشعار متابعة طلب رسمي بدون روابط دفع",
+        proceedText: "آمن / إشعار توصيل طلب صحيح",
+        blockText: "احتيال / حظر الحساب",
+        alertTag: "حساب تجاري موثق",
+        alertTitle: "إشعار رسمي من متجر نون",
+        alertDesc: "الحساب موثق رسمياً ولا يطلب منك دفع أي رسوم إضافية أو إدخال بيانات بطاقة."
+      },
+      {
+        id: "sc_aramex_fake",
+        sender: "Aramex-KSA",
+        sub: "رسالة نصية SMS • الآن",
+        icon: "fa-truck-fast",
+        iconBg: "bg-orange-100 text-orange-700",
+        isSafe: false,
+        verified: false,
+        isFamilyAlert: false,
+        body: "شحنتك معلقة في الجمارك لوجود رسوم تخليص (18.50 ريال). يرجى السداد عبر البطاقة البنكية خلال ساعة لإطلاق الشحنة:",
+        link: "https://aramex-customs-ksa.co/fee",
+        proceedText: "دفع رسوم الجمارك الآن",
+        blockText: "احتيال / تجاهل وحظر المرسل",
+        alertTag: "رابط شحن مزيف",
+        alertTitle: "انتحال شركة أرامكس!",
+        alertDesc: "النطاق (.co) مزيف ويستغل مبلغاً صغيراً (18.5 ريال) للحصول على رمز التحقق البنكي الخاص بك."
+      },
+      {
+        id: "sc_sehaty_real",
+        sender: "Sehhaty",
+        sub: "رسالة حكومية موثقة • منذ 5 دقائق",
+        icon: "fa-heart-pulse",
+        iconBg: "bg-emerald-100 text-emerald-700",
+        isSafe: true,
+        verified: true,
+        isFamilyAlert: false,
+        body: "تم تأكيد موعدك في مركز الرعاية الصحية الأولية غداً الساعة 10:30 صباحاً. نرجو الحضور قبل الموعد بـ 10 دقائق.",
+        link: "إشعار موعد طبي رسمي عبر تطبيق صحتي",
+        proceedText: "آمن / تأكيد موعد طبي صحيح",
+        blockText: "احتيال / حظر المرسل",
+        alertTag: "جهة صحية موثقة",
+        alertTitle: "إشعار رسمي من منصة صحتي",
+        alertDesc: "الرسالة صادرة من حساب صحتي الموثق ولا تطلب أي بيانات شخصية أو مالية."
       }
     ];
 
-    let currentIdx = 0;
-    let nabeehOn = false;
-    let stepStartTime = Date.now();
+    // حالة التطبيق والجولة العشوائية
+    let currentRoundQuestions = [];
+    let currentQIdx = 0;
+    let isNabeehOn = false;
+    let isSeniorModeOn = false;
+    let questionStartTime = Date.now();
+    let timerInterval = null;
     let sessionLogs = [];
-    let completedModes = new Set();
-    let lastSpeech = "";
+    let savedModesThisSession = new Set();
+    let lastUsedScenarioIds = new Set();
 
-    window.onload = () => {
-      loadScenario(0);
+    // تهيئة التطبيق عند التحميل
+    window.onload = function() {
+      loadSavedWebhookInput();
+      generateRandomFourQuestions();
+      startLiveQuestionTimer();
+      updateSessionStatsUI();
     };
 
-    function switchMainTab(tab) {
-      const testView = document.getElementById('sectionTestView');
-      const resView = document.getElementById('sectionResultsView');
-      const btnTest = document.getElementById('tabTestBtn');
-      const btnRes = document.getElementById('tabResultsBtn');
+    // اختيار 4 سيناريوهات عشوائية متوازنة (2 احتيال + 2 آمنة) مع تجنب تكرار أسئلة الجولة السابقة
+    function generateRandomFourQuestions() {
+      const fraudPool = SCENARIO_BANK.filter(s => !s.isSafe);
+      const safePool = SCENARIO_BANK.filter(s => s.isSafe);
 
-      if (tab === 'test') {
-        testView.classList.remove('hidden');
-        resView.classList.add('hidden');
-        btnTest.className = "px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-extrabold transition";
-        btnRes.className = "px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition flex items-center gap-1.5";
-      } else {
-        testView.classList.add('hidden');
-        resView.classList.remove('hidden');
-        btnRes.className = "px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5";
-        btnTest.className = "px-3.5 py-1.5 rounded-xl text-slate-300 hover:text-white text-xs font-extrabold transition";
-        renderResultsTable();
-      }
+      const pickTwoUnique = (pool) => {
+        const fresh = pool.filter(item => !lastUsedScenarioIds.has(item.id));
+        const source = fresh.length >= 2 ? fresh : pool;
+        const shuffled = [...source].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 2);
+      };
+
+      const selectedFraud = pickTwoUnique(fraudPool);
+      const selectedSafe = pickTwoUnique(safePool);
+      const combined = [...selectedFraud, ...selectedSafe].sort(() => Math.random() - 0.5);
+
+      lastUsedScenarioIds = new Set(combined.map(q => q.id));
+      currentRoundQuestions = combined;
+      currentQIdx = 0;
+      renderQuestionTabs();
+      renderCurrentQuestion();
     }
 
-    function toggleNabeeh() {
-      nabeehOn = !nabeehOn;
-      stepStartTime = Date.now();
+    function startFreshShuffledRound(resetAll = false) {
+      if (resetAll) {
+        sessionLogs = [];
+        savedModesThisSession.clear();
+        updateSessionStatsUI();
+        renderSessionLogsList();
+      }
+      generateRandomFourQuestions();
+      showToast("تم توليد 4 أسئلة عشوائية جديدة من البنك!", "success");
+    }
+
+    function switchModeWithNewQuestions() {
+      toggleNabeeh(true);
+      generateRandomFourQuestions();
+    }
+
+    // مؤقت حي لكل سؤال
+    function startLiveQuestionTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        const sec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
+        const badge = document.getElementById('liveTimerBadge');
+        if (badge) badge.textContent = `${sec} ث`;
+      }, 100);
+    }
+
+    // تبديل وضع حماية نبيه (A vs B)
+    function toggleNabeeh(silent = false) {
+      isNabeehOn = !isNabeehOn;
+      questionStartTime = Date.now();
 
       const btn = document.getElementById('shieldSwitchBtn');
       const knob = document.getElementById('shieldSwitchKnob');
@@ -482,364 +962,482 @@
       const tag = document.getElementById('modeTag');
       const heading = document.getElementById('shieldHeading');
       const desc = document.getElementById('shieldDesc');
+      const protLabel = document.getElementById('protectionLabel');
+      const protFill = document.getElementById('protectionFill');
       const phoneBanner = document.getElementById('phoneShieldBanner');
       const phoneBox = document.getElementById('phoneContainer');
+      const accessCard = document.getElementById('nabeehAccessibilityCard');
+      const accessPill = document.getElementById('accessStatePill');
 
-      if (nabeehOn) {
+      if (isNabeehOn) {
         btn.classList.replace('bg-slate-300', 'bg-emerald-500');
         knob.classList.add('-translate-x-7', 'text-emerald-700');
         knob.textContent = "ON";
+
         card.classList.replace('border-slate-200', 'border-emerald-500');
         card.classList.add('shield-glow');
         iconBox.className = "w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl shadow";
-        tag.className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
-        tag.textContent = "الوضع B: نبيه مفعل";
+        tag.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800";
+        tag.textContent = "الوضع B: درع نبيه مفعّل";
         heading.textContent = "درع نبيه نشط الآن";
-        desc.textContent = "يحلل الرسائل ويحذرك قبل النقر";
+        desc.textContent = "يحلل الرسائل ويكشف الاحتيال قبل النقر";
+
+        protLabel.className = "text-emerald-600 font-extrabold";
+        protLabel.textContent = "98% (حماية استباقية شاملة)";
+        protFill.className = "h-full bg-emerald-500 transition-all duration-500 rounded-full";
+        protFill.style.width = "98%";
+
         phoneBanner.classList.remove('hidden');
         phoneBox.style.borderColor = "#065f46";
-        notifyUser("تم تفعيل درع نبيه الذكي");
+
+        accessCard.classList.remove('opacity-60', 'pointer-events-none');
+        accessPill.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
+        accessPill.textContent = "مفعّل";
+
+        if (!silent) showToast("تم تفعيل درع نبيه! لاحظ ظهور بطاقة التحليل والتنبيه.", "success");
       } else {
         btn.classList.replace('bg-emerald-500', 'bg-slate-300');
         knob.classList.remove('-translate-x-7', 'text-emerald-700');
         knob.textContent = "OFF";
+
         card.classList.replace('border-emerald-500', 'border-slate-200');
         card.classList.remove('shield-glow');
         iconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl";
-        tag.className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-slate-100 text-slate-600";
-        tag.textContent = "الوضع A: بدون نبيه";
+        tag.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800";
+        tag.textContent = "الوضع A: بدون حماية نبيه";
         heading.textContent = "درع نبيه متوقف";
-        desc.textContent = "تظهر الرسائل بصورتها الخام";
+        desc.textContent = "تظهر الرسائل بصورتها الخام دون تنبيه";
+
+        protLabel.className = "text-rose-600 font-extrabold";
+        protLabel.textContent = "15% (معرّض للاحتيال)";
+        protFill.className = "h-full bg-rose-500 transition-all duration-500 rounded-full";
+        protFill.style.width = "15%";
+
         phoneBanner.classList.add('hidden');
         phoneBox.style.borderColor = "#1e293b";
-        notifyUser("تم إيقاف نبيه (الوضع العادي)");
+
+        accessCard.classList.add('opacity-60', 'pointer-events-none');
+        accessPill.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500";
+        accessPill.textContent = "مقفل";
+
+        if (!silent) showToast("تم إيقاف نبيه (الوضع العادي بدون حماية).", "warning");
       }
-      renderScenario();
+
+      renderCurrentQuestion();
     }
 
-    function loadScenario(idx) {
-      currentIdx = idx;
-      stepStartTime = Date.now();
+    // وضع التصميم الشامل لكبار السن
+    function toggleSeniorMode() {
+      isSeniorModeOn = !isSeniorModeOn;
+      const phone = document.getElementById('phoneContainer');
+      const btn = document.getElementById('seniorToggleBtn');
+
+      if (isSeniorModeOn) {
+        phone.classList.add('senior-mode-active');
+        btn.className = "px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 text-xs font-black transition shadow-sm";
+        btn.textContent = "مفعّل ✓";
+        speakCurrentNabeehAlert();
+        showToast("تم تفعيل وضع كبار السن (تكبير الخط والقراءة الصوتية).", "success");
+      } else {
+        phone.classList.remove('senior-mode-active');
+        btn.className = "px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-extrabold transition";
+        btn.textContent = "تفعيل";
+      }
+    }
+
+    function speakCurrentNabeehAlert() {
+      const q = currentRoundQuestions[currentQIdx];
+      if (!q || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const speechText = isNabeehOn
+        ? `${q.alertTitle}. ${q.alertDesc}`
+        : "درع نبيه متوقف حالياً. فعّل درع نبيه للاستماع إلى التحليل الصوتي.";
+      const utter = new SpeechSynthesisUtterance(speechText);
+      utter.lang = 'ar-SA';
+      utter.rate = 0.92;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function goToQuestion(idx) {
+      currentQIdx = idx;
+      questionStartTime = Date.now();
+      renderQuestionTabs();
+      renderCurrentQuestion();
+    }
+
+    function renderQuestionTabs() {
       for (let i = 0; i < 4; i++) {
-        const t = document.getElementById(`sTab${i}`);
-        t.className = i === idx
-          ? "flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white"
-          : "flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+        const tab = document.getElementById(`qTab${i}`);
+        if (i === currentQIdx) {
+          tab.className = "flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white shadow transition";
+        } else {
+          tab.className = "flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition";
+        }
       }
-      renderScenario();
     }
 
-    function renderScenario() {
-      const s = scenarios[currentIdx];
-      document.getElementById('msgSender').textContent = s.sender;
-      document.getElementById('msgSub').textContent = s.sub;
-      document.getElementById('msgStepBadge').textContent = `${s.id} / 4`;
-      document.getElementById('msgBody').textContent = s.body;
-      document.getElementById('msgLinkWrap').textContent = s.link;
-      document.getElementById('btnProceed').textContent = s.proceedText;
-      document.getElementById('btnBlock').textContent = s.blockText;
+    function renderCurrentQuestion() {
+      const q = currentRoundQuestions[currentQIdx];
+      if (!q) return;
+
+      document.getElementById('msgSender').textContent = q.sender;
+      document.getElementById('msgSub').textContent = q.sub;
+      document.getElementById('qCounterText').textContent = `رسالة ${currentQIdx + 1} من 4`;
+      document.getElementById('msgBody').textContent = q.body;
+
+      const linkWrap = document.getElementById('msgLinkWrap');
+      linkWrap.textContent = q.link;
+
+      document.getElementById('btnProceedText').textContent = q.proceedText;
+      document.getElementById('btnBlockText').textContent = q.blockText;
 
       const av = document.getElementById('msgAvatar');
-      av.className = `w-10 h-10 rounded-full flex items-center justify-center font-bold ${s.iconClass}`;
-      av.innerHTML = `<i class="fa-solid ${s.icon}"></i>`;
+      av.className = `w-10 h-10 rounded-full flex items-center justify-center font-bold text-base ${q.iconBg}`;
+      av.innerHTML = `<i class="fa-solid ${q.icon}"></i>`;
+
+      const verifiedIcon = document.getElementById('msgVerifiedIcon');
+      if (q.verified) verifiedIcon.classList.remove('hidden');
+      else verifiedIcon.classList.add('hidden');
 
       const alertCard = document.getElementById('nabeehAlertCard');
-      if (nabeehOn) {
-        alertCard.classList.remove('hidden');
-        document.getElementById('alertTag').textContent = s.alertTag;
-        document.getElementById('alertTitle').textContent = s.alertTitle;
-        document.getElementById('alertDesc').textContent = s.alertDesc;
+      const familyRow = document.getElementById('familyGuardianRow');
 
-        if (s.alertType === 'danger') {
-          alertCard.className = "p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 space-y-1.5 shadow-md";
-          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-rose-600 text-white";
+      if (isNabeehOn) {
+        alertCard.classList.remove('hidden');
+        document.getElementById('alertTag').textContent = q.alertTag;
+        document.getElementById('alertTitle').textContent = q.alertTitle;
+        document.getElementById('alertDesc').textContent = q.alertDesc;
+
+        if (q.isFamilyAlert) familyRow.classList.remove('hidden');
+        else familyRow.classList.add('hidden');
+
+        if (!q.isSafe) {
+          alertCard.className = "p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 space-y-2 shadow-lg danger-glow transition-all";
+          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-rose-600 text-white";
+          linkWrap.className = "p-2.5 rounded-xl bg-rose-100/70 border border-rose-300 text-xs font-mono text-rose-800 line-through truncate";
         } else {
-          alertCard.className = "p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 space-y-1.5 shadow-md";
-          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2 py-0.5 rounded bg-emerald-600 text-white";
+          alertCard.className = "p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 space-y-2 shadow-md transition-all";
+          document.getElementById('alertTag').className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-emerald-600 text-white";
+          linkWrap.className = "p-2.5 rounded-xl bg-emerald-100/70 border border-emerald-300 text-xs font-bold text-emerald-900 truncate";
         }
       } else {
         alertCard.classList.add('hidden');
+        linkWrap.className = q.isSafe
+          ? "p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-600 truncate"
+          : "p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline truncate";
       }
     }
 
     function submitDecision(choice) {
-      const s = scenarios[currentIdx];
-      const sec = Math.max(0.8, (Date.now() - stepStartTime) / 1000);
-      const isCorrect = (s.isSafe && choice === 'proceed') || (!s.isSafe && choice === 'block');
+      const q = currentRoundQuestions[currentQIdx];
+      if (!q) return;
+
+      const elapsedSec = parseFloat(Math.max(0.7, (Date.now() - questionStartTime) / 1000).toFixed(1));
+      const isCorrect = (q.isSafe && choice === 'proceed') || (!q.isSafe && choice === 'block');
 
       sessionLogs.unshift({
-        id: s.id,
-        withNabeeh: nabeehOn,
-        isCorrect,
-        sec: parseFloat(sec.toFixed(1))
+        questionIndex: currentQIdx,
+        scenarioId: q.id,
+        sender: q.sender,
+        withNabeeh: isNabeehOn,
+        isCorrect: isCorrect,
+        timeSec: elapsedSec
       });
 
-      updateSessionSummary();
-      notifyUser(isCorrect ? `قرار صحيح (${sec.toFixed(1)} ث)` : `قرار خاطئ (${sec.toFixed(1)} ث)`);
+      updateSessionStatsUI();
+      renderSessionLogsList();
 
-      if (currentIdx < 3) {
-        setTimeout(() => loadScenario(currentIdx + 1), 600);
+      if (isCorrect) {
+        showToast(`قرار صحيح خلال ${elapsedSec} ثانية!`, "success");
       } else {
-        saveRoundIfComplete();
+        const hint = isNabeehOn
+          ? "انتبه لتنبيه نبيه الظاهر في البطاقة!"
+          : "وقعت في الفخ! جرب تفعيل درع نبيه على اليمين لترى الفرق.";
+        showToast(`قرار خاطئ (${elapsedSec} ث): ${hint}`, "danger");
+      }
+
+      if (currentQIdx < 3) {
+        setTimeout(() => goToQuestion(currentQIdx + 1), 650);
+      } else {
+        checkAndSaveCompletedRound();
       }
     }
 
-    function updateSessionSummary() {
-      const a = sessionLogs.filter(x => !x.withNabeeh);
-      const b = sessionLogs.filter(x => x.withNabeeh);
+    function updateSessionStatsUI() {
+      const logsA = sessionLogs.filter(l => !l.withNabeeh);
+      const logsB = sessionLogs.filter(l => l.withNabeeh);
 
-      if (a.length) {
-        document.getElementById('liveAccA').textContent = `${Math.round((a.filter(x => x.isCorrect).length / a.length) * 100)}%`;
-        document.getElementById('liveTimeA').textContent = `${(a.reduce((s, x) => s + x.sec, 0) / a.length).toFixed(1)} ثانية`;
+      const uniqueA = new Set(logsA.map(l => l.scenarioId)).size;
+      const uniqueB = new Set(logsB.map(l => l.scenarioId)).size;
+
+      document.getElementById('liveCountA').textContent = `${Math.min(4, uniqueA)}/4`;
+      document.getElementById('liveCountB').textContent = `${Math.min(4, uniqueB)}/4`;
+
+      if (logsA.length > 0) {
+        const accA = Math.round((logsA.filter(l => l.isCorrect).length / logsA.length) * 100);
+        const timeA = (logsA.reduce((s, l) => s + l.timeSec, 0) / logsA.length).toFixed(1);
+        document.getElementById('liveAccA').textContent = `${accA}%`;
+        document.getElementById('liveTimeA').textContent = `${timeA} ث`;
+      } else {
+        document.getElementById('liveAccA').textContent = `--%`;
+        document.getElementById('liveTimeA').textContent = `-- ث`;
       }
-      if (b.length) {
-        document.getElementById('liveAccB').textContent = `${Math.round((b.filter(x => x.isCorrect).length / b.length) * 100)}%`;
-        document.getElementById('liveTimeB').textContent = `${(b.reduce((s, x) => s + x.sec, 0) / b.length).toFixed(1)} ثانية`;
+
+      if (logsB.length > 0) {
+        const accB = Math.round((logsB.filter(l => l.isCorrect).length / logsB.length) * 100);
+        const timeB = (logsB.reduce((s, l) => s + l.timeSec, 0) / logsB.length).toFixed(1);
+        document.getElementById('liveAccB').textContent = `${accB}%`;
+        document.getElementById('liveTimeB').textContent = `${timeB} ث`;
+      } else {
+        document.getElementById('liveAccB').textContent = `--%`;
+        document.getElementById('liveTimeB').textContent = `-- ث`;
       }
     }
 
-    function saveRoundIfComplete() {
-      const modeKey = nabeehOn ? 'with_nabeeh' : 'without_nabeeh';
-      const logsForMode = sessionLogs.filter(x => x.withNabeeh === nabeehOn);
-      const uniqueIds = new Set(logsForMode.map(x => x.id));
+    function renderSessionLogsList() {
+      const box = document.getElementById('sessionLogContainer');
+      if (sessionLogs.length === 0) {
+        box.innerHTML = `<p class="text-slate-400 text-center py-6">ابدأ بالإجابة على الرسالة المعروضة في الهاتف!</p>`;
+        return;
+      }
 
-      if (uniqueIds.size >= 4 && !completedModes.has(modeKey)) {
-        completedModes.add(modeKey);
-        const latestFour = [1, 2, 3, 4].map(id => logsForMode.find(x => x.id === id));
-        const correctCount = latestFour.filter(x => x && x.isCorrect).length;
+      box.innerHTML = sessionLogs.map(item => `
+        <div class="p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50/60 border-emerald-200' : 'bg-rose-50/60 border-rose-200'} flex items-center justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-slate-900">${item.sender}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${item.withNabeeh ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">
+                ${item.withNabeeh ? 'مع نبيه' : 'بدون نبيه'}
+              </span>
+            </div>
+            <span class="text-[11px] text-slate-500">الزمن: ${item.timeSec} ثانية</span>
+          </div>
+          <i class="fa-solid ${item.isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-rose-600'} text-base"></i>
+        </div>
+      `).join('');
+    }
+
+    function checkAndSaveCompletedRound() {
+      const modeKey = isNabeehOn ? 'with_nabeeh' : 'without_nabeeh';
+      const roundIds = currentRoundQuestions.map(q => q.id);
+      const modeLogs = sessionLogs.filter(l => l.withNabeeh === isNabeehOn && roundIds.includes(l.scenarioId));
+      const answeredUnique = new Set(modeLogs.map(l => l.scenarioId));
+
+      if (answeredUnique.size >= 4 && !savedModesThisSession.has(modeKey)) {
+        savedModesThisSession.add(modeKey);
+
+        const latestForEach = roundIds.map(id => modeLogs.find(l => l.scenarioId === id));
+        const correctCount = latestForEach.filter(l => l && l.isCorrect).length;
         const accuracy = Math.round((correctCount / 4) * 100);
-        const avgTimeSec = parseFloat((latestFour.reduce((s, x) => s + (x ? x.sec : 0), 0) / 4).toFixed(1));
+        const avgTimeSec = parseFloat((latestForEach.reduce((s, l) => s + (l ? l.timeSec : 0), 0) / 4).toFixed(1));
 
         const record = {
           participantName: document.getElementById('testerName').value.trim() || "مشارك مجهول",
           ageGroup: document.getElementById('testerAge').value,
           mode: modeKey,
-          correctCount,
-          accuracy,
-          avgTimeSec
+          correctCount: correctCount,
+          accuracy: accuracy,
+          avgTimeSec: avgTimeSec
         };
 
-        if (typeof window.persistSessionRecord === 'function') {
-          window.persistSessionRecord(record);
+        if (typeof window.saveResultToCloudStorage === 'function') {
+          window.saveResultToCloudStorage(record);
         }
-        notifyUser("تم حفظ نتيجتك! يمكنك التبديل للوضع الآخر أو عرض النتائج.");
+
+        const nextHint = !isNabeehOn
+          ? "اكتملت الجولة! فعّل الآن (درع نبيه) وجرّب 4 أسئلة جديدة للمقارنة."
+          : "تم حفظ نتيجتك في قاعدة البيانات بنجاح! شكراً لمشاركتك.";
+        showToast(nextHint, "success");
       }
     }
 
-    function resetCurrentRound() {
-      sessionLogs = [];
-      completedModes.clear();
-      document.getElementById('liveAccA').textContent = "--%";
-      document.getElementById('liveTimeA').textContent = "-- ثانية";
-      document.getElementById('liveAccB').textContent = "--%";
-      document.getElementById('liveTimeB').textContent = "-- ثانية";
-      loadScenario(0);
-      notifyUser("تم بدء جولة جديدة");
+    // إدارة إعدادات رابط Google Sheets Webhook
+    window.getActiveGoogleSheetWebhook = function() {
+      if (GOOGLE_SHEET_WEBHOOK_URL && GOOGLE_SHEET_WEBHOOK_URL.trim()) {
+        return GOOGLE_SHEET_WEBHOOK_URL.trim();
+      }
+      try {
+        return localStorage.getItem('nabeeh_gsheet_webhook') || "";
+      } catch (e) {
+        return "";
+      }
+    };
+
+    function loadSavedWebhookInput() {
+      const url = window.getActiveGoogleSheetWebhook();
+      const input = document.getElementById('googleSheetUrlInput');
+      const badge = document.getElementById('webhookSavedBadge');
+      if (input && url) {
+        input.value = url;
+        if (badge) {
+          badge.textContent = "مربوط ومفعّل ✓";
+          badge.className = "text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full";
+        }
+      }
     }
 
-    // الذكاء الاصطناعي الحقيقي (Gemini API)
-    function setAiSample(type) {
-      const box = document.getElementById('aiInputText');
-      if (type === 'bank') {
-        box.value = "عزيزي العميل، تم إيقاف بطاقتك البنكية مؤقتاً لعدم تحديث الهوية. حدث بياناتك فوراً عبر الرابط: http://alrajhi-kyc-update.com";
+    function saveGoogleSheetWebhook() {
+      const val = document.getElementById('googleSheetUrlInput').value.trim();
+      try {
+        localStorage.setItem('nabeeh_gsheet_webhook', val);
+      } catch (e) {}
+      loadSavedWebhookInput();
+      showToast(val ? "تم حفظ رابط Google Sheets بنجاح!" : "تم مسح الرابط.", "success");
+    }
+
+    // لوحة تحكم المشرف (PIN: 1234)
+    function openAdminPinModal() {
+      document.getElementById('adminPinInput').value = "";
+      document.getElementById('pinErrorText').classList.add('hidden');
+      const m = document.getElementById('adminPinModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+      setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+    }
+
+    function closeAdminPinModal() {
+      const m = document.getElementById('adminPinModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function verifyAdminPin() {
+      const pin = document.getElementById('adminPinInput').value.trim();
+      if (pin === "1234") {
+        closeAdminPinModal();
+        window.renderAdminDashboard();
+        const dash = document.getElementById('adminDashboardModal');
+        dash.classList.remove('hidden');
+        dash.classList.add('flex');
       } else {
-        box.value = "تم إصدار فاتورة سداد برقم 984120411 لخدمة تجديد رخصة السير عبر منصة أبشر الرسمية: https://www.absher.sa";
+        document.getElementById('pinErrorText').classList.remove('hidden');
       }
-      analyzeWithRealAI();
     }
 
-    function pasteScenarioToAi() {
-      const s = scenarios[currentIdx];
-      document.getElementById('aiInputText').value = `${s.body} ${s.link}`;
-      analyzeWithRealAI();
+    function closeAdminDashboard() {
+      const dash = document.getElementById('adminDashboardModal');
+      dash.classList.add('hidden');
+      dash.classList.remove('flex');
     }
 
-    async function analyzeWithRealAI() {
-      const text = document.getElementById('aiInputText').value.trim();
-      if (!text) {
-        notifyUser("اكتب أو الصق رسالة أو رابطاً أولاً");
+    window.renderAdminDashboard = function() {
+      const list = window.cloudRecords || [];
+      document.getElementById('headerTotalBadge').textContent = list.length;
+      document.getElementById('adminTotalRounds').textContent = list.length;
+
+      const listA = list.filter(r => r.mode === 'without_nabeeh');
+      const listB = list.filter(r => r.mode === 'with_nabeeh');
+
+      document.getElementById('adminCountA').textContent = `${listA.length} جولات`;
+      document.getElementById('adminCountB').textContent = `${listB.length} جولات`;
+
+      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + (r.accuracy || 0), 0) / listA.length) : 0;
+      const timeA = listA.length ? (listA.reduce((s, r) => s + (r.avgTimeSec || 0), 0) / listA.length).toFixed(1) : 0;
+
+      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + (r.accuracy || 0), 0) / listB.length) : 0;
+      const timeB = listB.length ? (listB.reduce((s, r) => s + (r.avgTimeSec || 0), 0) / listB.length).toFixed(1) : 0;
+
+      document.getElementById('adminAccA').textContent = `${accA}%`;
+      document.getElementById('adminTimeA').textContent = `${timeA} ث`;
+      document.getElementById('adminAccB').textContent = `${accB}%`;
+      document.getElementById('adminTimeB').textContent = `${timeB} ث`;
+
+      document.getElementById('barTextA').textContent = `${accA}%`;
+      document.getElementById('barFillA').style.width = `${accA}%`;
+      document.getElementById('barTextB').textContent = `${accB}%`;
+      document.getElementById('barFillB').style.width = `${accB}%`;
+
+      const tbody = document.getElementById('adminTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد نتائج مسجلة بعد.</td></tr>`;
         return;
       }
 
-      const btn = document.getElementById('aiScanBtn');
-      const label = document.getElementById('aiBtnLabel');
-      const icon = document.getElementById('aiBtnIcon');
-      btn.disabled = true;
-      label.textContent = "جاري التحليل بالذكاء الاصطناعي...";
-      icon.className = "fa-solid fa-spinner fa-spin text-amber-400";
-
-      try {
-        const apiKey = "";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-        const payload = {
-          contents: [{
-            role: "user",
-            parts: [{ text: `حلل هذه الرسالة أو الرابط أمنياً لمستخدم في السعودية:\n${text}` }]
-          }],
-          systemInstruction: {
-            parts: [{ text: "أنت محلل أمن سيبراني في تطبيق نبيه. صنف الرسالة بدقة إلى safe أو suspicious أو dangerous واشرح السبب باختصار واضح بالعربية مع نصيحة مبسطة لكبار السن." }]
-          },
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: "OBJECT",
-              properties: {
-                riskLevel: { type: "STRING", enum: ["safe", "suspicious", "dangerous"] },
-                confidence: { type: "INTEGER" },
-                title: { type: "STRING" },
-                explanation: { type: "STRING" },
-                advice: { type: "STRING" }
-              },
-              required: ["riskLevel", "confidence", "title", "explanation", "advice"]
-            }
-          }
-        };
-
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error("API error");
-        const json = await res.json();
-        const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-        const parsed = JSON.parse(raw);
-        showAiOutput(parsed);
-      } catch (e) {
-        // محلل احتياطي ذكي في حال منع إطار Google Sites الاتصال الخارجي
-        const lower = text.toLowerCase();
-        const isDanger = lower.includes('http://') || lower.includes('.xyz') || lower.includes('update') || lower.includes('track') || lower.includes('verify') || lower.includes('prize');
-        const isSafe = lower.includes('absher.sa') || lower.includes('.gov.sa');
-        showAiOutput(isDanger ? {
-          riskLevel: "dangerous",
-          confidence: 95,
-          title: "تحذير: رابط أو رسالة احتيالية",
-          explanation: "يحتوي النص على رابط غير رسمي وأسلوب استعجال يهدف لسرقة بياناتك.",
-          advice: "لا تضغط على الرابط أبداً واحذف الرسالة فوراً."
-        } : isSafe ? {
-          riskLevel: "safe",
-          confidence: 97,
-          title: "رابط رسمي وموثوق",
-          explanation: "النطاق حكومي سعودي رسمي (.sa) ولا يطلب بيانات سرية.",
-          advice: "المصدر آمن ويمكنك المتابعة باطمئنان."
-        } : {
-          riskLevel: "suspicious",
-          confidence: 84,
-          title: "محتوى مشبوه يحتاج الحذر",
-          explanation: "المصدر غير موثق رسمياً، تجنب مشاركة أي بيانات مالية أو رموز تحقق.",
-          advice: "تأكد من الجهة الرسمية قبل اتخاذ أي إجراء."
-        });
-      } finally {
-        btn.disabled = false;
-        label.textContent = "فحص بالذكاء الاصطناعي الحقيقي";
-        icon.className = "fa-solid fa-wand-magic-sparkles text-amber-400";
-      }
-    }
-
-    function showAiOutput(data) {
-      const card = document.getElementById('aiResultCard');
-      card.classList.remove('hidden');
-      document.getElementById('aiVerdictTitle').textContent = data.title;
-      document.getElementById('aiConfidenceTag').textContent = `الثقة: ${data.confidence}%`;
-      document.getElementById('aiExplanation').textContent = data.explanation;
-      document.getElementById('aiSeniorAdvice').textContent = `💡 ${data.advice}`;
-      lastSpeech = `${data.title}. ${data.advice}`;
-
-      if (data.riskLevel === 'dangerous') {
-        card.className = "p-3.5 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 text-xs space-y-2";
-      } else if (data.riskLevel === 'safe') {
-        card.className = "p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 text-xs space-y-2";
-      } else {
-        card.className = "p-3.5 rounded-2xl border-2 border-amber-500 bg-amber-50 text-amber-950 text-xs space-y-2";
-      }
-    }
-
-    function speakAiAdvice() {
-      if (!lastSpeech || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(lastSpeech);
-      u.lang = 'ar-SA';
-      window.speechSynthesis.speak(u);
-    }
-
-    // عرض وتصدير البيانات
-    window.renderResultsTable = function() {
-      const list = window.allRecords || [];
-      document.getElementById('totalSavedBadge').textContent = list.length;
-      document.getElementById('statTotalRounds').textContent = list.length;
-
-      const listA = list.filter(r => r.mode === 'without_nabeeh');
-      const listB = list.filter(r => r.mode === 'with_nabeeh');
-
-      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + r.accuracy, 0) / listA.length) : 0;
-      const timeA = listA.length ? (listA.reduce((s, r) => s + r.avgTimeSec, 0) / listA.length).toFixed(1) : 0;
-      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + r.accuracy, 0) / listB.length) : 0;
-      const timeB = listB.length ? (listB.reduce((s, r) => s + r.avgTimeSec, 0) / listB.length).toFixed(1) : 0;
-
-      document.getElementById('statTotalAccA').textContent = `${accA}%`;
-      document.getElementById('statTotalTimeA').textContent = `السرعة: ${timeA} ث`;
-      document.getElementById('statTotalAccB').textContent = `${accB}%`;
-      document.getElementById('statTotalTimeB').textContent = `السرعة: ${timeB} ث`;
-
-      const tbody = document.getElementById('resultsTableBody');
-      if (!list.length) return;
-
-      tbody.innerHTML = list.map(r => `
-        <tr>
-          <td class="p-3 font-extrabold text-slate-900">${r.participantName}</td>
-          <td class="p-3 text-slate-600">${r.ageGroup}</td>
-          <td class="p-3 font-bold ${r.mode === 'with_nabeeh' ? 'text-emerald-700' : 'text-rose-700'}">
-            ${r.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)'}
-          </td>
-          <td class="p-3 font-black">${r.accuracy}% (${r.correctCount}/4)</td>
-          <td class="p-3 font-bold">${r.avgTimeSec} ث</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = list.map(r => {
+        const isWith = r.mode === 'with_nabeeh';
+        const timeStr = r.createdAtMs ? new Date(r.createdAtMs).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }) : 'الآن';
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(r.participantName || 'مشارك مجهول')}</td>
+            <td class="py-2.5 px-3 text-slate-600">${escapeHtml(r.ageGroup || '')}</td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${isWith ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${isWith ? 'مع درع نبيه (B)' : 'بدون نبيه (A)'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 font-black ${r.accuracy >= 75 ? 'text-emerald-700' : 'text-rose-700'}">${r.correctCount}/4 (${r.accuracy}%)</td>
+            <td class="py-2.5 px-3 font-bold text-slate-700">${r.avgTimeSec} ث</td>
+            <td class="py-2.5 px-3 text-slate-400 text-[11px]">${timeStr}</td>
+          </tr>
+        `;
+      }).join('');
     };
 
-    function copySummaryText() {
-      const list = window.allRecords || [];
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function copySummaryReport() {
+      const list = window.cloudRecords || [];
       const listA = list.filter(r => r.mode === 'without_nabeeh');
       const listB = list.filter(r => r.mode === 'with_nabeeh');
-      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + r.accuracy, 0) / listA.length) : 0;
-      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + r.accuracy, 0) / listB.length) : 0;
+      const accA = listA.length ? Math.round(listA.reduce((s, r) => s + (r.accuracy || 0), 0) / listA.length) : 0;
+      const timeA = listA.length ? (listA.reduce((s, r) => s + (r.avgTimeSec || 0), 0) / listA.length).toFixed(1) : 0;
+      const accB = listB.length ? Math.round(listB.reduce((s, r) => s + (r.accuracy || 0), 0) / listB.length) : 0;
+      const timeB = listB.length ? (listB.reduce((s, r) => s + (r.avgTimeSec || 0), 0) / listB.length).toFixed(1) : 0;
 
-      const txt = `نتائج اختبار النموذج الأولي (تطبيق نبيه):\n- عدد الجولات: ${list.length}\n- الدقة بدون نبيه (A): ${accA}%\n- الدقة مع نبيه (B): ${accB}%`;
+      const text = `📊 نتائج اختبار النموذج الأولي الفعلي لتطبيق (نبيه) - مقرر التفكير التصميمي (IND1101):
+• إجمالي الجولات المختبرة (بنك أسئلة عشوائي متجدد): ${list.length} جولات
+• نسبة اكتشاف الاحتيال بدون نبيه (الوضع A): ${accA}% (متوسط السرعة: ${timeA} ثانية)
+• نسبة اكتشاف الاحتيال مع تفعيل درع نبيه (الوضع B): ${accB}% (متوسط السرعة: ${timeB} ثانية)
+• الأثر التصميمي: تحسّن دقة الحماية بنسبة +${Math.max(0, accB - accA)}% بفضل التنبيه المبسط.`;
+
       const ta = document.createElement('textarea');
-      ta.value = txt;
+      ta.value = text;
       document.body.appendChild(ta);
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      notifyUser("تم نسخ ملخص النتائج!");
+      showToast("تم نسخ ملخص النتائج للعرض التقديمي!", "success");
     }
 
-    function downloadCsvFile() {
-      const list = window.allRecords || [];
-      if (!list.length) {
-        notifyUser("لا توجد نتائج لتصديرها بعد");
+    function exportResultsCsv() {
+      const list = window.cloudRecords || [];
+      if (list.length === 0) {
+        showToast("لا توجد نتائج لتصديرها بعد.", "warning");
         return;
       }
-      const rows = [
-        ["المشارك", "الفئة", "الوضع", "الدقة %", "السرعة (ث)"],
-        ...list.map(r => [r.participantName, r.ageGroup, r.mode === 'with_nabeeh' ? 'مع نبيه' : 'بدون نبيه', r.accuracy, r.avgTimeSec])
-      ];
-      const csv = "\uFEFF" + rows.map(e => e.join(",")).join("\n");
+      const headers = ["المشارك", "الفئة العمرية", "الوضع", "الدرجة من 4", "الدقة %", "متوسط السرعة (ث)"];
+      const rows = list.map(r => [
+        `"${(r.participantName || 'مشارك مجهول').replace(/"/g, '""')}"`,
+        `"${r.ageGroup || ''}"`,
+        r.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)',
+        r.correctCount,
+        `${r.accuracy}%`,
+        r.avgTimeSec
+      ]);
+      const csv = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = "nabeeh_results.csv";
+      a.download = "nabeeh_ab_test_results.csv";
       a.click();
     }
 
-    let toastTimer;
-    function notifyUser(msg) {
-      const t = document.getElementById('toastBox');
-      t.textContent = msg;
-      t.classList.remove('hidden');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.add('hidden'), 3000);
+    let toastTimeout;
+    function showToast(msg, type = "success") {
+      const banner = document.getElementById('toastBanner');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastText');
+      text.textContent = msg;
+      icon.innerHTML = type === 'danger'
+        ? '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>'
+        : type === 'warning'
+        ? '<i class="fa-solid fa-circle-info text-amber-400"></i>'
+        : '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      banner.classList.remove('hidden');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => banner.classList.add('hidden'), 3800);
     }
   </script>
 </body>
