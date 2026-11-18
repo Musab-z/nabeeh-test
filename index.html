@@ -2,203 +2,255 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
-  <title>مختبر اختبار النموذج الأولي - تطبيق نبيه (A/B Test)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>نَبِيه — مختبر التجربة التفاعلي (A/B Test)</title>
+  
+  <!-- استدعاء خط Cairo من Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- استدعاء Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- استدعاء أيقونات Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
+    :root {
+      --font-main: 'Cairo', sans-serif;
     }
 
-    body {
-      font-family: 'Cairo', 'Tajawal', sans-serif;
-      background-color: #f1f5f9;
+    html, body {
+      font-family: var(--font-main);
+      background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0fdf4 100%);
       color: #0f172a;
       margin: 0;
       padding: 0;
+      min-height: 100dvh;
       overflow-x: hidden;
-      padding-bottom: env(safe-area-inset-bottom);
+      -webkit-tap-highlight-color: transparent;
     }
 
-    /* إطار الهاتف متجاوب مع الشاشات الصغيرة والكبيرة */
-    .phone-frame {
-      border: 6px solid #1e293b;
-      border-radius: 30px;
+    /* منع التكبير التلقائي لحقول الإدخال على هواتف آيفون iOS */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    /* تأثير البطاقات الزجاجية */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.08);
+    }
+
+    /* إطار الهاتف الذكي الواقعي */
+    .smartphone-shell {
+      border: 9px solid #1e293b;
+      border-radius: 38px;
       background: #ffffff;
-      box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.22), inset 0 0 0 1.5px #334155;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), inset 0 0 0 2px #334155;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
     @media (min-width: 640px) {
-      .phone-frame {
+      .smartphone-shell {
         border-width: 11px;
-        border-radius: 42px;
-        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), inset 0 0 0 2px #334155;
+        border-radius: 44px;
       }
     }
 
-    .phone-notch {
-      width: 96px;
-      height: 18px;
+    .smartphone-notch {
+      width: 110px;
+      height: 20px;
       background: #1e293b;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
       margin: 0 auto;
     }
 
-    @media (min-width: 640px) {
-      .phone-notch {
-        width: 120px;
-        height: 22px;
-        border-bottom-left-radius: 14px;
-        border-bottom-right-radius: 14px;
+    /* حركات انتقالية ناعمة */
+    .fade-slide-in {
+      animation: fadeSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
-    @keyframes shieldPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45); }
-      50% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+    @keyframes emeraldPulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    @keyframes dangerPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); }
-      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-    }
-
-    .shield-glow {
-      animation: shieldPulse 2.2s infinite;
-    }
-
-    .danger-glow {
-      animation: dangerPulse 2s infinite;
-    }
-
-    /* وضع كبار السن داخل شاشة الهاتف */
-    .senior-mode-active #msgBody {
-      font-size: 1.15rem !important;
-      line-height: 1.85 !important;
-      font-weight: 800 !important;
-    }
-    .senior-mode-active #alertTitle {
-      font-size: 1.15rem !important;
-    }
-    .senior-mode-active #alertDesc {
-      font-size: 1rem !important;
-      line-height: 1.7 !important;
-      font-weight: 700 !important;
-    }
-    .senior-mode-active #btnProceed,
-    .senior-mode-active #btnBlock {
-      font-size: 1.05rem !important;
-      padding-top: 0.95rem !important;
-      padding-bottom: 0.95rem !important;
-    }
-
-    .touch-btn {
-      touch-action: manipulation;
+    .shield-active-ring {
+      animation: emeraldPulse 2.2s infinite;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="flex flex-col min-h-[100dvh]">
 
-  <!-- الشريط العلوي -->
-  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40" style="padding-top: env(safe-area-inset-top);">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+  <!-- الشريط العلوي للتطبيق (Top Navigation Bar) -->
+  <header class="bg-slate-900/95 backdrop-blur-md text-white sticky top-0 z-40 border-b border-slate-800 shadow-md">
+    <div class="max-w-5xl mx-auto px-3.5 sm:px-6 py-3 flex items-center justify-between gap-2">
+      <!-- شعار وهوية نبيه -->
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center text-lg sm:text-xl shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-xl shadow-lg shrink-0">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div class="min-w-0">
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-sm sm:text-lg font-black tracking-tight truncate">نبيه — مختبر التجربة (A/B)</h1>
-            <span class="hidden sm:inline-block text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full font-bold shrink-0">IND1101</span>
-          </div>
-          <p class="text-[10px] sm:text-[11px] text-slate-400 truncate">تفعيل تلقائي للحماية بعد الجولة الأولى • حفظ فوري</p>
+          <h1 class="text-sm sm:text-lg font-black tracking-tight truncate">نَبِيه — مختبر التجربة التفاعلي</h1>
+          <p class="text-[11px] text-slate-400 truncate hidden sm:block">قياس أثر الحماية الاستباقية ضد الاحتيال الرقمي (IND1101)</p>
         </div>
       </div>
 
+      <!-- شارة المرحلة النشطة + زر لوحة المشرف -->
       <div class="flex items-center gap-2 shrink-0">
-        <div id="cloudStatusPill" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-[11px] font-bold text-slate-300">
-          <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span id="cloudStatusLabel">جاري تهيئة التخزين...</span>
-        </div>
+        <span id="navStageBadge" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
+          جاهز للبدء
+        </span>
 
-        <button onclick="openAdminPinModal()" class="touch-btn px-3 sm:px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs sm:text-sm font-black transition flex items-center gap-1.5 shadow">
+        <button type="button" onclick="openAdminPinModal()" aria-label="لوحة المشرف"
+          class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-400 border border-slate-700 text-xs font-extrabold transition flex items-center gap-1.5">
           <i class="fa-solid fa-lock"></i>
-          <span class="hidden xs:inline sm:inline">لوحة النتائج</span>
-          <span id="headerTotalBadge" class="bg-slate-900 text-amber-400 text-[11px] px-2 py-0.5 rounded-full font-extrabold">0</span>
+          <span class="hidden sm:inline">لوحة المشرف</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- شريط بيانات المشارك وإعداد الجولة العشوائية -->
-  <div class="bg-white border-b border-slate-200 shadow-sm">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-      <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2 flex-1">
-        <span class="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
-          <i class="fa-solid fa-user-check text-teal-600"></i>
-          <span>بيانات المشارك:</span>
-        </span>
-        <div class="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
-          <!-- حجم خط 16px على الجوال لمنع التكبير التلقائي في آيفون -->
-          <input id="testerName" type="text" placeholder="الاسم (اختياري)" class="px-3 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 w-full sm:w-48">
-          <select id="testerAge" class="px-2.5 py-2 text-base sm:text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-600 font-bold text-slate-700 w-full sm:w-auto">
-            <option value="شباب (18-35)">شباب (18-35)</option>
-            <option value="بالغون (36-55)">بالغون (36-55)</option>
-            <option value="كبار السن (+55)">كبار السن (+55)</option>
-            <option value="طالب جامعي">طالب جامعي</option>
-          </select>
+  <!-- الحاوية الرئيسية للتطبيق -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-8 flex flex-col justify-center">
+
+    <!-- ===================================================================== -->
+    <!-- الشاشة 1: شاشة الترحيب وإعداد بيانات المشارك (Intro / Setup Screen)    -->
+    <!-- ===================================================================== -->
+    <section id="screenIntro" class="fade-slide-in max-w-xl w-full mx-auto">
+      <div class="glass-card rounded-3xl p-5 sm:p-8 space-y-6">
+        <div class="text-center space-y-2.5">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-extrabold">
+            <i class="fa-solid fa-flask"></i>
+            <span>تجربة تفاعلية من مرحلتين (3 دقائق)</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 leading-snug">
+            هل تستطيع كشف رسائل الاحتيال قبل فوات الأوان؟
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            ستخوض جولة قصيرة من مرحلتين: في <strong class="text-rose-700">المرحلة الأولى</strong> ستفحص 4 رسائل بدون حماية، وفي <strong class="text-emerald-700">المرحلة الثانية</strong> سيتفعّل <strong class="text-slate-900">درع نبيه الذكي</strong> تلقائياً لمساعدتك في 4 رسائل جديدة!
+          </p>
+        </div>
+
+        <!-- خطوات التجربة البصرية -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+          <div class="p-3 rounded-2xl bg-rose-50/80 border border-rose-200/80">
+            <div class="w-8 h-8 rounded-xl bg-rose-600 text-white text-xs font-black flex items-center justify-center mx-auto mb-1.5">1</div>
+            <p class="text-xs font-extrabold text-rose-950">بدون نبيه</p>
+            <p class="text-[10px] text-rose-700 mt-0.5">4 رسائل خام</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200/80">
+            <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white text-xs font-black flex items-center justify-center mx-auto mb-1.5">2</div>
+            <p class="text-xs font-extrabold text-emerald-950">مع درع نبيه</p>
+            <p class="text-[10px] text-emerald-700 mt-0.5">4 رسائل محمية</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-indigo-50/80 border border-indigo-200/80">
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white text-xs font-black flex items-center justify-center mx-auto mb-1.5">3</div>
+            <p class="text-xs font-extrabold text-indigo-950">نتيجتك وتقييمك</p>
+            <p class="text-[10px] text-indigo-700 mt-0.5">مقارنة الأداء</p>
+          </div>
+        </div>
+
+        <!-- حقول بيانات المشارك -->
+        <div class="space-y-4 pt-1">
+          <div class="space-y-1.5">
+            <label for="inputParticipantName" class="block text-xs sm:text-sm font-extrabold text-slate-800">
+              الاسم أو اللقب <span class="text-slate-400 font-semibold">(اختياري)</span>
+            </label>
+            <input id="inputParticipantName" type="text" placeholder="مثال: أحمد (أو اتركه فارغاً كمشارك مجهول)"
+              class="w-full min-h-[48px] px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:border-indigo-600 transition">
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="selectAgeGroup" class="block text-xs sm:text-sm font-extrabold text-slate-800">
+              الفئة العمرية
+            </label>
+            <select id="selectAgeGroup"
+              class="w-full min-h-[48px] px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:border-indigo-600 font-bold text-slate-800 transition">
+              <option value="أقل من 18">أقل من 18 سنة</option>
+              <option value="شباب (18-35)" selected>شباب (18-35 سنة)</option>
+              <option value="متوسط العمر (36-55)">متوسط العمر (36-55 سنة)</option>
+              <option value="كبار السن (55+)">كبار السن (55+ سنة)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- زر بدء التجربة -->
+        <button type="button" onclick="startExperiment()"
+          class="w-full min-h-[54px] py-3.5 px-6 rounded-2xl bg-gradient-to-l from-indigo-600 to-slate-900 hover:from-indigo-500 hover:to-slate-800 active:scale-[0.98] text-white text-base font-black shadow-xl transition flex items-center justify-center gap-2.5">
+          <span>ابدأ التجربة الآن</span>
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <p class="text-center text-[11px] text-slate-400">
+          <i class="fa-solid fa-shield-check text-emerald-600 ml-1"></i>
+          تُحفظ نتائج التجربة بشكل مجهول لأغراض البحث الأكاديمي لمشروع نبيه
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- الشاشة 2: شاشة الاختبار التفاعلي (المرحلة 1 والمرحلة 2 داخل الهاتف)   -->
+    <!-- ===================================================================== -->
+    <section id="screenTest" class="hidden fade-slide-in w-full max-w-lg mx-auto space-y-4">
+
+      <!-- لافتة حالة المرحلة الحالية (بدون زر تبديل يدوي) -->
+      <div id="stageStatusBanner" class="rounded-3xl p-4 border-2 transition-all duration-300 shadow-sm bg-rose-50 border-rose-300">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div id="stageBannerIcon" class="w-11 h-11 rounded-2xl bg-rose-600 text-white flex items-center justify-center text-xl shrink-0 shadow">
+              <i class="fa-solid fa-shield-xmark"></i>
+            </div>
+            <div class="min-w-0">
+              <h3 id="stageBannerTitle" class="text-sm sm:text-base font-black text-rose-950 truncate">
+                المرحلة الأولى: بدون حماية نبيه
+              </h3>
+              <p id="stageBannerSub" class="text-xs text-rose-800 truncate">
+                افحص الرسالة والرابط بنفسك واتخذ قرارك
+              </p>
+            </div>
+          </div>
+
+          <div class="text-left shrink-0">
+            <span id="questionProgressText" class="inline-block px-2.5 py-1 rounded-xl bg-white/90 text-slate-900 text-xs font-black border border-black/10">
+              1 / 4
+            </span>
+          </div>
+        </div>
+
+        <!-- شريط التقدم للأربع رسائل -->
+        <div class="grid grid-cols-4 gap-1.5 mt-3">
+          <div id="progStep0" class="h-1.5 rounded-full bg-rose-600 transition-all"></div>
+          <div id="progStep1" class="h-1.5 rounded-full bg-rose-200 transition-all"></div>
+          <div id="progStep2" class="h-1.5 rounded-full bg-rose-200 transition-all"></div>
+          <div id="progStep3" class="h-1.5 rounded-full bg-rose-200 transition-all"></div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between sm:justify-end gap-2">
-        <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg">
-          <i class="fa-solid fa-shuffle text-teal-600 ml-1"></i> 4 رسائل ثم تفعيل نبيه تلقائياً
-        </span>
-        <button onclick="startFreshShuffledRound(true)" class="touch-btn px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm shrink-0">
-          <i class="fa-solid fa-rotate-right text-amber-400"></i>
-          <span>مشارك جديد</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- المحتوى الرئيسي: على الجوال يظهر الهاتف أولاً لسهولة الوصول المباشر -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-
-    <!-- العمود الأوسط (الأول على الجوال): محاكاة الهاتف التفاعلي -->
-    <section class="lg:col-span-5 flex flex-col items-center order-1 lg:order-2 w-full">
-
-      <!-- مؤشر الحالة السريع أعلى الهاتف للجوال -->
-      <div id="mobilePhaseBar" class="w-full max-w-[410px] mb-2.5 px-3.5 py-2 rounded-2xl bg-rose-100 border border-rose-200 text-rose-900 flex items-center justify-between text-xs font-extrabold transition-all">
-        <span id="mobilePhaseText" class="flex items-center gap-1.5">
-          <i class="fa-solid fa-shield-xmark text-rose-600"></i>
-          <span>المرحلة 1 من 2: بدون حماية نبيه (A)</span>
-        </span>
-        <span id="mobilePhaseStep" class="bg-white/80 px-2 py-0.5 rounded-full text-[11px]">1 / 4</span>
-      </div>
-
-      <!-- شريط التقدم والأسئلة الأربعة للجولة الحالية -->
-      <div class="w-full max-w-[410px] mb-3 bg-white p-1.5 sm:p-2 rounded-2xl border border-slate-200 flex items-center justify-between gap-1 sm:gap-1.5 shadow-sm">
-        <button onclick="goToQuestion(0)" id="qTab0" class="touch-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white transition">سؤال 1</button>
-        <button onclick="goToQuestion(1)" id="qTab1" class="touch-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 2</button>
-        <button onclick="goToQuestion(2)" id="qTab2" class="touch-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 3</button>
-        <button onclick="goToQuestion(3)" id="qTab3" class="touch-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">سؤال 4</button>
-      </div>
-
-      <!-- إطار الهاتف -->
-      <div id="phoneContainer" class="phone-frame w-full max-w-[410px] overflow-hidden flex flex-col">
-        <!-- شريط الحالة العلوي -->
-        <div class="bg-slate-900 text-white px-4 sm:px-5 pt-1 pb-2 flex items-center justify-between text-[11px] font-semibold">
+      <!-- إطار الهاتف الذكي التفاعلي -->
+      <div id="smartphoneFrame" class="smartphone-shell w-full overflow-hidden flex flex-col">
+        <!-- شريط الحالة العلوي للهاتف -->
+        <div class="bg-slate-900 text-white px-5 pt-1 pb-2 flex items-center justify-between text-[11px] font-bold">
           <span>9:41</span>
-          <div class="phone-notch"></div>
+          <div class="smartphone-notch"></div>
           <div class="flex items-center gap-1.5">
             <i class="fa-solid fa-signal"></i>
             <i class="fa-solid fa-wifi"></i>
@@ -206,737 +258,1011 @@
           </div>
         </div>
 
-        <!-- شريط درع نبيه داخل الهاتف -->
-        <div id="phoneShieldBanner" class="hidden bg-emerald-600 text-white px-3.5 sm:px-4 py-2 text-xs font-extrabold flex items-center justify-between shadow-sm">
+        <!-- شريط درع نبيه داخل الهاتف (يظهر فقط في المرحلة 2) -->
+        <div id="phoneNabeehHeader" class="hidden bg-gradient-to-l from-emerald-600 to-teal-600 text-white px-4 py-2 text-xs font-extrabold flex items-center justify-between shadow">
           <div class="flex items-center gap-2">
             <i class="fa-solid fa-shield-halved animate-pulse"></i>
-            <span>نبيه نشط: يراقب الروابط والرسائل</span>
+            <span>درع نبيه نشط — حماية فورية مفعّلة</span>
           </div>
-          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full shrink-0">حماية فورية</span>
+          <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">AI Guard</span>
         </div>
 
-        <!-- رأس المحادثة -->
-        <div class="bg-slate-50 border-b border-slate-200 px-3.5 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div id="msgAvatar" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-base shrink-0">
+        <!-- ترويسة تطبيق الرسائل داخل الهاتف -->
+        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-3 min-w-0">
+            <div id="smsAvatar" class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-base font-bold shrink-0">
               <i class="fa-solid fa-box"></i>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
-                <h4 id="msgSender" class="text-sm font-black text-slate-900 truncate">SPL-Delivery</h4>
-                <span id="msgVerifiedIcon" class="hidden text-emerald-600 text-xs shrink-0" title="جهة موثقة"><i class="fa-solid fa-circle-check"></i></span>
+                <h4 id="smsSenderName" class="text-sm font-black text-slate-900 truncate">SPL-Delivery</h4>
+                <span id="smsVerifiedBadge" class="hidden text-emerald-600 text-xs shrink-0" title="مرسل موثق">
+                  <i class="fa-solid fa-circle-check"></i>
+                </span>
               </div>
-              <p id="msgSub" class="text-[11px] text-slate-500 truncate">رسالة نصية SMS • الآن</p>
+              <p id="smsChannelText" class="text-[11px] text-slate-500 truncate">رسالة نصية SMS • الآن</p>
             </div>
           </div>
 
-          <!-- مؤقت حي للسؤال -->
-          <div class="flex items-center gap-1.5 shrink-0">
-            <span id="liveTimerBadge" class="text-[11px] font-mono font-extrabold bg-slate-200/80 text-slate-800 px-2.5 py-1 rounded-full">
-              0.0 ث
-            </span>
+          <!-- مؤقت حي لقياس سرعة القرار -->
+          <div class="px-2.5 py-1 rounded-full bg-slate-200/80 text-slate-800 text-xs font-mono font-black shrink-0 flex items-center gap-1">
+            <i class="fa-regular fa-clock text-slate-500 text-[11px]"></i>
+            <span id="liveQuestionTimer">0.0 ث</span>
           </div>
         </div>
 
-        <!-- محتوى الرسالة داخل الهاتف -->
-        <div class="p-3 sm:p-4 bg-[#eef2f6] space-y-3 flex-1 flex flex-col justify-between">
-          <div class="space-y-3">
-            <!-- فقاعة الرسالة -->
-            <div class="bg-white p-3.5 sm:p-4 rounded-2xl rounded-tr-sm border border-slate-200 shadow-sm space-y-2.5">
-              <p id="msgBody" class="text-[13.5px] sm:text-sm text-slate-800 leading-relaxed font-semibold break-words"></p>
-              <div id="msgLinkWrap" class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline break-all whitespace-normal" dir="ltr"></div>
-              <div class="text-left text-[10px] text-slate-400">الآن • <span id="qCounterText">رسالة 1 من 4</span></div>
-            </div>
-
-            <!-- بطاقة تدخل نبيه الذكية (تظهر تلقائياً في الجولة الثانية) -->
-            <div id="nabeehAlertCard" class="hidden p-3.5 sm:p-4 rounded-2xl border-2 space-y-2 shadow-lg transition-all">
-              <div class="flex items-center justify-between gap-2">
-                <span id="alertTag" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-md"></span>
-                <button type="button" onclick="speakCurrentNabeehAlert()" class="touch-btn text-[11px] font-extrabold underline flex items-center gap-1 opacity-85 hover:opacity-100 py-1 px-1.5">
-                  <i class="fa-solid fa-volume-high"></i> استمع
-                </button>
-              </div>
-              <h5 id="alertTitle" class="text-sm font-black"></h5>
-              <p id="alertDesc" class="text-xs leading-relaxed font-medium"></p>
-              <div id="familyGuardianRow" class="hidden pt-2 border-t border-black/10 text-[11px] font-extrabold flex items-center gap-1.5">
-                <i class="fa-solid fa-people-roof shrink-0"></i>
-                <span>تنبيه العائلة: تم إشعار المشرف العائلي لحماية كبار السن.</span>
-              </div>
+        <!-- منطقة الرسالة وتحليل نبيه -->
+        <div class="p-4 sm:p-5 bg-[#eef2f6] space-y-3.5">
+          
+          <!-- فقاعة الرسالة الواردة -->
+          <div class="bg-white p-4 rounded-2xl rounded-tr-sm border border-slate-200/90 shadow-sm space-y-3">
+            <p id="smsBodyText" class="text-sm sm:text-[15px] text-slate-800 leading-relaxed font-semibold"></p>
+            
+            <!-- صندوق الرابط أو المرجع -->
+            <div id="smsLinkBox" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline break-all" dir="ltr"></div>
+            
+            <div class="flex items-center justify-between text-[11px] text-slate-400">
+              <span>واردة للتو</span>
+              <span id="smsStageFootNote" class="font-bold text-rose-600">بدون فحص نبيه</span>
             </div>
           </div>
 
-          <!-- أزرار اتخاذ القرار -->
-          <div class="bg-white p-3 sm:p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-            <p class="text-xs font-extrabold text-center text-slate-700">ما هو قرارك كمستخدم؟</p>
-            <div class="grid grid-cols-1 sm:grid-cols-1 gap-2">
-              <button id="btnProceed" onclick="submitDecision('proceed')" class="touch-btn w-full min-h-[48px] py-3 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white text-sm font-extrabold transition flex items-center justify-center gap-2 shadow-sm">
-                <i class="fa-solid fa-check-circle"></i>
-                <span id="btnProceedText">آمن / المتابعة</span>
-              </button>
-              <button id="btnBlock" onclick="submitDecision('block')" class="touch-btn w-full min-h-[48px] py-3 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-800 border border-slate-300 text-sm font-extrabold transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-ban text-rose-600"></i>
-                <span id="btnBlockText">احتيال / تجاهل وحظر</span>
+          <!-- بطاقة التحليل الذكي من "نبيه" (تظهر تلقائياً في المرحلة الثانية فقط) -->
+          <div id="nabeehAnalysisCard" class="hidden rounded-2xl p-4 border-2 space-y-2.5 shadow-lg transition-all">
+            <div class="flex items-center justify-between gap-2">
+              <span id="analysisBadge" class="text-[11px] font-black px-2.5 py-1 rounded-lg"></span>
+              
+              <!-- زر القراءة الصوتية بالعربية لدعم كبار السن (Web Speech API) -->
+              <button type="button" onclick="speakNabeehAnalysis()"
+                class="min-h-[36px] px-3 py-1 rounded-xl bg-white/80 hover:bg-white active:scale-95 text-slate-900 border border-black/10 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
+                <i class="fa-solid fa-volume-high text-indigo-600"></i>
+                <span>استمع للتحليل الصوتي</span>
               </button>
             </div>
+
+            <h5 id="analysisHeading" class="text-sm sm:text-base font-black leading-snug"></h5>
+            <p id="analysisExplanation" class="text-xs sm:text-[13px] leading-relaxed font-semibold"></p>
           </div>
+
+          <!-- أزرار اتخاذ القرار للمشارك (48px+ لمس مريح) -->
+          <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <p class="text-xs font-extrabold text-center text-slate-600">ما هو قرارك تجاه هذه الرسالة؟</p>
+            
+            <button type="button" id="btnChooseSafe" onclick="handleUserAnswer('safe')"
+              class="w-full min-h-[50px] py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-sm font-black transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-circle-check text-base"></i>
+              <span>رسالة آمنة / موثوقة</span>
+            </button>
+
+            <button type="button" id="btnChooseScam" onclick="handleUserAnswer('scam')"
+              class="w-full min-h-[50px] py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white text-sm font-black transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-triangle-exclamation text-base"></i>
+              <span>احتيال / رابط مشبوه</span>
+            </button>
+          </div>
+
         </div>
       </div>
-
     </section>
 
-    <!-- العمود الأيمن: لوحة درع نبيه الجانبية + وضع كبار السن + التعليمات -->
-    <aside class="lg:col-span-4 space-y-4 sm:space-y-5 order-2 lg:order-1">
+    <!-- ===================================================================== -->
+    <!-- الشاشة 3: شاشة الانتقال التلقائي بعد المرحلة الأولى                   -->
+    <!-- ===================================================================== -->
+    <section id="screenTransition" class="hidden fade-slide-in max-w-lg w-full mx-auto">
+      <div class="glass-card rounded-3xl p-6 sm:p-8 text-center space-y-6">
+        <div class="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 text-3xl flex items-center justify-center mx-auto shadow-inner">
+          <i class="fa-solid fa-flag-checkered"></i>
+        </div>
 
-      <!-- بطاقة التبديل الرئيسية A/B -->
-      <div id="shieldCard" class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-slate-200 shadow-md transition-all">
-        <div class="flex items-center justify-between mb-3">
-          <span id="modeTag" class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800">
-            الوضع A: بدون حماية نبيه
+        <div class="space-y-1.5">
+          <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-extrabold">
+            اكتملت المرحلة الأولى من التجربة
           </span>
-          <span class="text-[11px] font-bold text-slate-400">تفعيل تلقائي بعد الجولة 1</span>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 pt-1">
+            نتيجتك بدون حماية "نبيه"
+          </h2>
+          <p class="text-xs text-slate-500">تم تسجيل نتيجتك في المرحلة الأولى بنجاح</p>
         </div>
 
-        <div class="flex items-center justify-between gap-3 my-2">
-          <div class="flex items-center gap-3">
-            <div id="shieldIconBox" class="w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl transition-all shrink-0">
-              <i class="fa-solid fa-shield"></i>
-            </div>
-            <div>
-              <h2 id="shieldHeading" class="text-base sm:text-lg font-black text-slate-900">درع نبيه متوقف</h2>
-              <p id="shieldDesc" class="text-xs text-slate-500">تظهر الرسائل بصورتها الخام دون تنبيه</p>
-            </div>
-          </div>
-
-          <button id="shieldSwitchBtn" onclick="toggleNabeeh()" aria-label="تبديل وضع نبيه" class="touch-btn w-16 h-9 rounded-full bg-slate-300 p-1 flex items-center transition-colors cursor-pointer shrink-0 shadow-inner">
-            <div id="shieldSwitchKnob" class="w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-slate-700 flex items-center justify-center transition-transform">
-              OFF
-            </div>
-          </button>
-        </div>
-
-        <!-- شريط مؤشر الحماية -->
-        <div class="mt-4 pt-3 border-t border-slate-100">
-          <div class="flex justify-between text-xs font-bold mb-1.5">
-            <span class="text-slate-600">مستوى الحماية الاستباقية:</span>
-            <span id="protectionLabel" class="text-rose-600 font-extrabold">15% (معرّض للاحتيال)</span>
-          </div>
-          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-            <div id="protectionFill" class="h-full bg-rose-500 transition-all duration-500 rounded-full" style="width: 15%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- خيارات إضافية عند تفعيل درع نبيه (وضع كبار السن والقراءة الصوتية) -->
-      <div id="nabeehAccessibilityCard" class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm space-y-3 opacity-60 pointer-events-none transition-all">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-base shrink-0">
-              <i class="fa-solid fa-universal-access"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-black text-slate-900">مزايا التصميم الشامل</h3>
-              <p class="text-[11px] text-slate-500">تتفعّل تلقائياً مع درع نبيه</p>
-            </div>
-          </div>
-          <span id="accessStatePill" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">مقفل</span>
-        </div>
-
-        <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 gap-2">
+        <!-- عرض نتيجة المرحلة الأولى -->
+        <div class="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-rose-50 border border-rose-200">
           <div>
-            <p class="text-xs font-extrabold text-slate-800">وضع كبار السن (خط كبير)</p>
-            <p class="text-[11px] text-slate-500">تكبير النصوص والأزرار لسهولة القراءة</p>
+            <p class="text-xs font-bold text-rose-700">دقة اكتشاف الاحتيال</p>
+            <p id="transStage1Score" class="text-2xl sm:text-3xl font-black text-rose-950 mt-1">0/4 (0%)</p>
           </div>
-          <button id="seniorToggleBtn" onclick="toggleSeniorMode()" class="touch-btn px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-extrabold transition shrink-0">
-            تفعيل
+          <div>
+            <p class="text-xs font-bold text-rose-700">متوسط سرعة القرار</p>
+            <p id="transStage1Time" class="text-2xl sm:text-3xl font-black text-rose-950 mt-1">0.0 ث</p>
+          </div>
+        </div>
+
+        <!-- شرح تفعيل درع نبيه للمرحلة الثانية -->
+        <div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-right space-y-1.5">
+          <div class="flex items-center gap-2 text-emerald-800 font-black text-sm">
+            <i class="fa-solid fa-shield-halved text-lg text-emerald-600"></i>
+            <span>الآن سيتم تفعيل درع نبيه الذكي تلقائياً!</span>
+          </div>
+          <p class="text-xs text-emerald-900 leading-relaxed">
+            ستظهر لك <strong>4 رسائل جديدة ومختلفة تماماً</strong>، لكن هذه المرة سيقوم <strong>نبيه</strong> بفحص كل رسالة وتنبيهك بلغة بسيطة مع إمكانية الاستماع الصوتي.
+          </p>
+        </div>
+
+        <button type="button" onclick="startStageTwo()"
+          class="w-full min-h-[54px] py-3.5 px-5 rounded-2xl bg-gradient-to-l from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white text-base font-black shadow-xl transition flex items-center justify-center gap-2">
+          <span>الانتقال للمرحلة 2: تفعيل درع نبيه 🛡️</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- الشاشة 4: شاشة المقارنة النهائية + التقييم + إعادة التجربة           -->
+    <!-- ===================================================================== -->
+    <section id="screenFinal" class="hidden fade-slide-in max-w-xl w-full mx-auto">
+      <div class="glass-card rounded-3xl p-5 sm:p-7 space-y-6">
+        
+        <!-- العنوان والتهنئة -->
+        <div class="text-center space-y-1.5">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 text-2xl flex items-center justify-center mx-auto mb-1">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900">
+            نتائج المقارنة بين المرحلتين
+          </h2>
+          <p class="text-xs text-slate-500">شاهد الفرق الفعلي في دقتك وسرعتك بوجود درع نبيه</p>
+        </div>
+
+        <!-- بطاقات المقارنة جنباً إلى جنب -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-center space-y-1">
+            <span class="inline-block px-2 py-0.5 rounded-md bg-rose-200/70 text-rose-900 text-[11px] font-extrabold">
+              بدون نبيه (A)
+            </span>
+            <p id="finalScoreA" class="text-2xl sm:text-3xl font-black text-rose-950 pt-1">0%</p>
+            <p id="finalFractionA" class="text-xs font-bold text-rose-700">0 من 4 صحيحة</p>
+            <p id="finalTimeA" class="text-[11px] font-extrabold text-rose-800 pt-1 border-t border-rose-200/80">
+              السرعة: 0.0 ث
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-400 text-center space-y-1 shadow-sm">
+            <span class="inline-block px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[11px] font-extrabold">
+              مع درع نبيه (B)
+            </span>
+            <p id="finalScoreB" class="text-2xl sm:text-3xl font-black text-emerald-950 pt-1">0%</p>
+            <p id="finalFractionB" class="text-xs font-bold text-emerald-700">0 من 4 صحيحة</p>
+            <p id="finalTimeB" class="text-[11px] font-extrabold text-emerald-800 pt-1 border-t border-emerald-200">
+              السرعة: 0.0 ث
+            </p>
+          </div>
+        </div>
+
+        <!-- نموذج التقييم التفاعلي -->
+        <div id="feedbackFormContainer" class="space-y-4 pt-2 border-t border-slate-200">
+          <!-- 1. تقييم النجوم -->
+          <div class="text-center space-y-1.5">
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-800">
+              1. ما تقييمك لتجربة الحماية في تطبيق "نبيه"؟
+            </label>
+            <div class="flex items-center justify-center gap-2 text-3xl" id="starsWrapper">
+              <button type="button" onclick="selectStarRating(1)" class="star-btn p-1 text-amber-400 transition transform active:scale-90"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="selectStarRating(2)" class="star-btn p-1 text-amber-400 transition transform active:scale-90"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="selectStarRating(3)" class="star-btn p-1 text-amber-400 transition transform active:scale-90"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="selectStarRating(4)" class="star-btn p-1 text-amber-400 transition transform active:scale-90"><i class="fa-solid fa-star"></i></button>
+              <button type="button" onclick="selectStarRating(5)" class="star-btn p-1 text-amber-400 transition transform active:scale-90"><i class="fa-solid fa-star"></i></button>
+            </div>
+            <p id="starLabelDesc" class="text-xs font-extrabold text-amber-700">ممتاز وواضح جداً (5 من 5)</p>
+          </div>
+
+          <!-- 2. اختيار الميزة المفضلة -->
+          <div class="space-y-2">
+            <label class="block text-xs sm:text-sm font-extrabold text-slate-800">
+              2. ما أكثر ميزة أعجبتك في النموذج الأولي؟
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button type="button" onclick="selectFeatureChip('وضوح التحذير المبسط', this)"
+                class="feat-chip min-h-[46px] px-3 py-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-950 text-xs font-extrabold text-right transition">
+                ✓ وضوح التحذير المبسط
+              </button>
+              <button type="button" onclick="selectFeatureChip('سرعة كشف الاحتيال', this)"
+                class="feat-chip min-h-[46px] px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold text-right transition">
+                • سرعة كشف الاحتيال
+              </button>
+              <button type="button" onclick="selectFeatureChip('القراءة الصوتية وكبار السن', this)"
+                class="feat-chip min-h-[46px] px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold text-right transition">
+                • القراءة الصوتية وكبار السن
+              </button>
+              <button type="button" onclick="selectFeatureChip('حماية العائلة', this)"
+                class="feat-chip min-h-[46px] px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold text-right transition">
+                • حماية العائلة
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. ملاحظة اختيارية -->
+          <div class="space-y-1.5">
+            <label for="inputFeedbackComment" class="block text-xs sm:text-sm font-extrabold text-slate-800">
+              3. ملاحظاتك أو اقتراحاتك لتطوير التطبيق <span class="text-slate-400 font-semibold">(اختياري)</span>
+            </label>
+            <textarea id="inputFeedbackComment" rows="2" placeholder="اكتب رأيك أو اقتراحك هنا ليصل لفريق المشروع..."
+              class="w-full p-3 rounded-2xl bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:border-indigo-600 resize-none"></textarea>
+          </div>
+
+          <!-- زر إرسال التقييم -->
+          <button type="button" id="btnSubmitFeedback" onclick="submitFinalFeedback()"
+            class="w-full min-h-[52px] py-3 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white text-sm sm:text-base font-black shadow-lg transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>إرسال التقييم وحفظ النتيجة</span>
           </button>
         </div>
 
-        <button onclick="speakCurrentNabeehAlert()" class="touch-btn w-full min-h-[44px] py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition flex items-center justify-center gap-2 shadow-sm">
-          <i class="fa-solid fa-volume-high"></i>
-          <span>قراءة تنبيه نبيه صوتياً (عربي)</span>
-        </button>
-      </div>
-
-      <!-- بطاقة خطوات الاختبار للمشارك -->
-      <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-3xl p-4 sm:p-5 shadow-md space-y-2.5">
-        <h3 class="font-extrabold text-sm text-amber-400 flex items-center gap-2">
-          <i class="fa-solid fa-list-check"></i>
-          <span>خطوات التجربة للمشارك</span>
-        </h3>
-        <ol class="text-xs text-slate-300 space-y-2 leading-relaxed list-decimal pr-4">
-          <li>أكمل الـ <strong class="text-white">4 رسائل العشوائية</strong> في الجولة الأولى (<strong class="text-rose-300">بدون نبيه</strong>).</li>
-          <li>بعد الإجابة على الرسالة الرابعة، <strong class="text-emerald-400">يتفعّل درع نبيه تلقائياً</strong> لتختبر <strong class="text-white">4 رسائل جديدة</strong> مع الحماية.</li>
-          <li>في النهاية تظهر لك مقارنة دقتك وسرعتك بين الجولتين!</li>
-        </ol>
-      </div>
-
-    </aside>
-
-    <!-- العمود الأيسر: مقارنة الأداء الحية للمشارك الحالي -->
-    <aside class="lg:col-span-3 space-y-4 sm:space-y-5 order-3">
-
-      <!-- بطاقة المقارنة المباشرة A vs B -->
-      <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-md space-y-3.5">
-        <h3 class="font-extrabold text-base text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-scale-balanced text-indigo-600"></i>
-          <span>نتيجتك الفورية (A vs B)</span>
-        </h3>
-
-        <div class="grid grid-cols-2 lg:grid-cols-1 gap-2.5 sm:gap-3">
-          <div class="p-3 sm:p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-extrabold text-rose-900">بدون نبيه (A)</span>
-              <span id="liveCountA" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-rose-700 border border-rose-200">0/4</span>
-            </div>
-            <div class="flex justify-between items-baseline mt-2">
-              <div>
-                <p class="text-[10px] sm:text-[11px] text-rose-700">الدقة</p>
-                <p id="liveAccA" class="text-xl sm:text-2xl font-black text-rose-950">--%</p>
-              </div>
-              <div class="text-left">
-                <p class="text-[10px] sm:text-[11px] text-rose-700">السرعة</p>
-                <p id="liveTimeA" class="text-xs sm:text-sm font-extrabold text-rose-900">-- ث</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="p-3 sm:p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-xs font-extrabold text-emerald-900">مع نبيه (B)</span>
-              <span id="liveCountB" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-emerald-700 border border-emerald-200">0/4</span>
-            </div>
-            <div class="flex justify-between items-baseline mt-2">
-              <div>
-                <p class="text-[10px] sm:text-[11px] text-emerald-700">الدقة</p>
-                <p id="liveAccB" class="text-xl sm:text-2xl font-black text-emerald-950">--%</p>
-              </div>
-              <div class="text-left">
-                <p class="text-[10px] sm:text-[11px] text-emerald-700">السرعة</p>
-                <p id="liveTimeB" class="text-xs sm:text-sm font-extrabold text-emerald-900">-- ث</p>
-              </div>
-            </div>
-          </div>
+        <!-- رسالة تأكيد الإرسال -->
+        <div id="feedbackSentConfirmation" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-center space-y-1">
+          <p class="text-sm font-black text-emerald-900">
+            <i class="fa-solid fa-circle-check text-emerald-600 ml-1"></i>
+            شكراً لك! تم حفظ تقييمك ونتائجك في قاعدة البيانات بنجاح.
+          </p>
         </div>
 
-        <button onclick="switchModeWithNewQuestions()" class="touch-btn w-full min-h-[44px] py-2.5 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-extrabold transition flex items-center justify-center gap-1.5">
-          <i class="fa-solid fa-repeat"></i>
-          <span>انتقل للوضع الآخر بأسئلة جديدة</span>
-        </button>
-      </div>
-
-      <!-- سجل قرارات الجلسة -->
-      <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-md">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-extrabold text-sm text-slate-900">سجل إجاباتك</h3>
-          <span class="text-[11px] text-slate-400 font-bold">بنك من 12 سيناريو</span>
+        <!-- قسم سؤال إعادة التجربة مرة ثانية بأسئلة جديدة -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-900 text-white text-center space-y-3">
+          <p class="text-sm font-extrabold text-slate-100">
+            هل ترغب في إعادة التجربة مرة ثانية بأسئلة جديدة؟
+          </p>
+          <button type="button" onclick="retryFullExperiment()"
+            class="w-full min-h-[50px] py-3 px-5 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-slate-950 text-sm font-black shadow-md transition flex items-center justify-center gap-2">
+            <span>إعادة التجربة بأسئلة جديدة 🔄</span>
+          </button>
         </div>
-        <div id="sessionLogContainer" class="space-y-2 max-h-[240px] overflow-y-auto text-xs">
-          <p class="text-slate-400 text-center py-6">ابدأ بالإجابة على الرسالة المعروضة في الهاتف!</p>
-        </div>
-      </div>
 
-    </aside>
+      </div>
+    </section>
 
   </main>
 
-  <!-- نافذة الانتقال التلقائي من (بدون نبيه A) إلى (مع نبيه B) -->
-  <div id="autoActivateModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-emerald-200 space-y-4 text-center">
-      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 text-3xl flex items-center justify-center mx-auto shield-glow">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
-      <div>
-        <span class="inline-block text-[11px] font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 mb-2">
-          تفعيل تلقائي للحماية
-        </span>
-        <h3 class="text-xl font-black text-slate-900">انتهت الجولة الأولى (بدون نبيه)</h3>
-        <p id="roundASummaryText" class="text-sm font-bold text-slate-600 mt-1"></p>
-      </div>
-
-      <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-2">
-        <p class="text-xs sm:text-sm font-extrabold">
-          جاري تفعيل درع «نبيه» تلقائياً والانتقال لاختبار <span class="underline">4 رسائل جديدة</span> مع التنبيهات الذكية...
-        </p>
-        <div class="w-full h-2.5 bg-emerald-200 rounded-full overflow-hidden">
-          <div id="autoProgressFill" class="h-full bg-emerald-600 rounded-full transition-all duration-100" style="width: 0%;"></div>
-        </div>
-        <p class="text-[11px] font-bold text-emerald-700">البدء خلال <span id="autoCountdownNum">3</span> ثوانٍ</p>
-      </div>
-
-      <button onclick="activateNabeehNow()" class="touch-btn w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm shadow-lg transition flex items-center justify-center gap-2">
-        <i class="fa-solid fa-bolt"></i>
-        <span>ابدأ الجولة الثانية (مع نبيه) الآن</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- نافذة المقارنة النهائية بعد إكمال الجولتين (A و B) -->
-  <div id="finalCompareModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
-      <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 text-2xl flex items-center justify-center mx-auto">
-        <i class="fa-solid fa-trophy"></i>
-      </div>
-      <div>
-        <h3 class="text-xl font-black text-slate-900">اكتملت التجربة بنجاح!</h3>
-        <p class="text-xs text-slate-500 mt-1">تم حفظ نتائج الجولتين تلقائياً في قاعدة البيانات</p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3 text-center">
-        <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200">
-          <p class="text-xs font-extrabold text-rose-800">بدون نبيه (A)</p>
-          <p id="finalAccA" class="text-2xl font-black text-rose-950 my-1">0%</p>
-          <p id="finalTimeA" class="text-[11px] font-bold text-rose-700">0 ث</p>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
-          <p class="text-xs font-extrabold text-emerald-800">مع نبيه (B)</p>
-          <p id="finalAccB" class="text-2xl font-black text-emerald-950 my-1">0%</p>
-          <p id="finalTimeB" class="text-[11px] font-bold text-emerald-700">0 ث</p>
-        </div>
-      </div>
-
-      <div id="finalDeltaBanner" class="p-3 rounded-2xl bg-slate-100 text-slate-800 text-xs sm:text-sm font-extrabold"></div>
-
-      <div class="flex flex-col sm:flex-row gap-2 pt-1">
-        <button onclick="closeFinalCompareModal()" class="touch-btn flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm">
-          إغلاق ومراجعة الشاشة
-        </button>
-        <button onclick="closeFinalCompareModal(); startFreshShuffledRound(true);" class="touch-btn flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm shadow">
-          مشارك جديد ◀
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- نافذة إدخال الرمز السري للمشرف (PIN: 1234) -->
-  <div id="adminPinModal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <!-- ===================================================================== -->
+  <!-- نافذة إدخال الرمز السري للمشرف (PIN: 1234)                            -->
+  <!-- ===================================================================== -->
+  <div id="modalAdminPin" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
       <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 text-xl flex items-center justify-center mx-auto">
         <i class="fa-solid fa-lock"></i>
       </div>
       <div>
-        <h3 class="text-lg font-black text-slate-900">لوحة نتائج المشرف</h3>
-        <p class="text-xs text-slate-500 mt-1">أدخل الرمز السري لعرض قاعدة البيانات السحابية وإعدادات الربط (الرمز: <span class="font-mono font-bold text-slate-800">1234</span>)</p>
+        <h3 class="text-lg font-black text-slate-900">لوحة المشرف (Admin Dashboard)</h3>
+        <p class="text-xs text-slate-500 mt-1">أدخل الرمز السري لعرض الإحصائيات المجمّعة (الرمز: <span class="font-mono font-bold text-slate-800">1234</span>)</p>
       </div>
-      <input id="adminPinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
-        onkeydown="if(event.key==='Enter') verifyAdminPin()"
-        class="w-full text-center tracking-widest text-xl font-black py-2.5 bg-slate-50 border-2 border-slate-300 rounded-2xl focus:outline-none focus:border-amber-500">
-      <p id="pinErrorText" class="hidden text-xs font-bold text-rose-600">الرمز السري غير صحيح!</p>
+      <input id="inputAdminPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"
+        onkeydown="if(event.key==='Enter') checkAdminPin()"
+        class="w-full min-h-[48px] text-center tracking-widest text-xl font-black py-2.5 bg-slate-50 border-2 border-slate-300 rounded-2xl focus:outline-none focus:border-amber-500">
+      <p id="adminPinError" class="hidden text-xs font-bold text-rose-600">الرمز السري غير صحيح، حاول مرة أخرى.</p>
       <div class="flex gap-2">
-        <button onclick="closeAdminPinModal()" class="touch-btn flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">إلغاء</button>
-        <button onclick="verifyAdminPin()" class="touch-btn flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow">دخول</button>
+        <button type="button" onclick="closeAdminPinModal()" class="flex-1 min-h-[46px] py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm">إلغاء</button>
+        <button type="button" onclick="checkAdminPin()" class="flex-1 min-h-[46px] py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow">دخول</button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة لوحة تحليلات المشرف وقاعدة البيانات السحابية -->
-  <div id="adminDashboardModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-4">
-    <div class="bg-white rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto space-y-5">
-
-      <!-- رأس اللوحة -->
+  <!-- ===================================================================== -->
+  <!-- نافذة لوحة تحليلات المشرف (Admin Dashboard Modal)                     -->
+  <!-- ===================================================================== -->
+  <div id="modalAdminDashboard" class="fixed inset-0 bg-slate-900/85 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 max-h-[92dvh] overflow-y-auto space-y-5">
+      
       <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
           <div class="flex items-center gap-2">
-            <h3 class="text-lg sm:text-xl font-black text-slate-900">لوحة نتائج المشاركين وقاعدة التخزين</h3>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">بيانات حية</span>
+            <h3 class="text-lg sm:text-xl font-black text-slate-900">لوحة متابعة نتائج الاختبار</h3>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800">Google Sheets متصل</span>
           </div>
-          <p class="text-xs text-slate-500">تُجمع النتائج تلقائياً من كل مشارك يكمل 4 أسئلة عشوائية</p>
+          <p class="text-xs text-slate-500">إحصائيات التجارب المحفوظة محلياً والمرسلة تلقائياً إلى Google Sheets</p>
         </div>
-        <button onclick="closeAdminDashboard()" class="touch-btn w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold shrink-0">
+        <button type="button" onclick="closeAdminDashboard()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <!-- قسم إعدادات الربط السحابي الخارجي (Google Sheets Webhook) -->
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <h4 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-table text-emerald-600"></i>
-            <span>ربط قاعدة بيانات Google Sheets (للاستضافة على GitHub Pages)</span>
-          </h4>
-          <span id="webhookSavedBadge" class="text-[11px] font-bold text-slate-500">اختياري</span>
-        </div>
-        <p class="text-[11px] text-slate-600 leading-relaxed">
-          لإرسال كل نتيجة مباشرة إلى جدول Google Sheets عند رفع الصفحة على GitHub، الصق رابط <strong>Apps Script Web App</strong> هنا (أو ضعه في المتغير <code class="bg-slate-200 px-1 rounded">GOOGLE_SHEET_WEBHOOK_URL</code> أعلى الكود):
-        </p>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input id="googleSheetUrlInput" type="url" dir="ltr" placeholder="https://script.google.com/macros/s/..../exec"
-            class="flex-1 px-3 py-2 text-base sm:text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-600 font-mono">
-          <button onclick="saveGoogleSheetWebhook()" class="touch-btn px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition shrink-0">
-            حفظ الرابط
-          </button>
-        </div>
-      </div>
-
-      <!-- بطاقات الإحصائيات الكلية -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <!-- بطاقات الإحصاء الكلية -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         <div class="p-4 rounded-2xl bg-slate-900 text-white">
-          <p class="text-xs text-slate-400 font-bold">إجمالي الجولات المسجلة</p>
-          <p id="adminTotalRounds" class="text-3xl font-black text-amber-400 mt-1">0</p>
-          <p class="text-[11px] text-slate-400 mt-1">كل جولة = 4 أسئلة عشوائية</p>
+          <p class="text-xs text-slate-400 font-bold">إجمالي المشاركين المكتملين</p>
+          <p id="dashTotalRuns" class="text-3xl font-black text-amber-400 mt-1">0</p>
+          <p class="text-[11px] text-slate-400 mt-1">متوسط التقييم: <span id="dashAvgRating" class="text-white font-bold">--</span></p>
         </div>
         <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
-          <div class="flex justify-between items-center">
-            <p class="text-xs font-extrabold text-rose-800">بدون نبيه (A)</p>
-            <span id="adminCountA" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-rose-700">0 جولات</span>
-          </div>
+          <p class="text-xs text-rose-800 font-extrabold">المرحلة 1: بدون نبيه (A)</p>
           <div class="flex justify-between items-baseline mt-2">
-            <p id="adminAccA" class="text-2xl font-black text-rose-950">0%</p>
-            <p id="adminTimeA" class="text-xs font-bold text-rose-700">0 ث</p>
+            <p id="dashAccA" class="text-2xl font-black text-rose-950">0%</p>
+            <p id="dashTimeA" class="text-xs font-bold text-rose-700">السرعة: 0.0 ث</p>
           </div>
         </div>
         <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
-          <div class="flex justify-between items-center">
-            <p class="text-xs font-extrabold text-emerald-800">مع درع نبيه (B)</p>
-            <span id="adminCountB" class="text-[11px] font-bold bg-white px-2 py-0.5 rounded text-emerald-700">0 جولات</span>
-          </div>
+          <p class="text-xs text-emerald-800 font-extrabold">المرحلة 2: مع نبيه (B)</p>
           <div class="flex justify-between items-baseline mt-2">
-            <p id="adminAccB" class="text-2xl font-black text-emerald-950">0%</p>
-            <p id="adminTimeB" class="text-xs font-bold text-emerald-700">0 ث</p>
+            <p id="dashAccB" class="text-2xl font-black text-emerald-950">0%</p>
+            <p id="dashTimeB" class="text-xs font-bold text-emerald-700">السرعة: 0.0 ث</p>
           </div>
         </div>
       </div>
 
-      <!-- أشرطة المقارنة البصرية -->
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-        <p class="text-xs font-extrabold text-slate-800">مقارنة دقة اكتشاف الاحتيال بين الوضعين:</p>
-        <div class="space-y-2.5">
-          <div>
-            <div class="flex justify-between text-xs font-bold mb-1">
-              <span class="text-rose-700">بدون نبيه (A)</span>
-              <span id="barTextA" class="text-rose-950">0%</span>
-            </div>
-            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
-              <div id="barFillA" class="h-full bg-rose-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-between text-xs font-bold mb-1">
-              <span class="text-emerald-700">مع درع نبيه (B)</span>
-              <span id="barTextB" class="text-emerald-950">0%</span>
-            </div>
-            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
-              <div id="barFillB" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- جدول سجل المشاركين -->
+      <!-- جدول السجلات المحلية -->
       <div class="border border-slate-200 rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto max-h-60">
+        <div class="overflow-x-auto max-h-64">
           <table class="w-full text-right text-xs">
             <thead class="bg-slate-100 text-slate-700 font-extrabold border-b border-slate-200">
               <tr>
-                <th class="py-2.5 px-3 whitespace-nowrap">المشارك</th>
-                <th class="py-2.5 px-3 whitespace-nowrap">الفئة العمرية</th>
-                <th class="py-2.5 px-3 whitespace-nowrap">الوضع</th>
-                <th class="py-2.5 px-3 whitespace-nowrap">النتيجة</th>
-                <th class="py-2.5 px-3 whitespace-nowrap">متوسط السرعة</th>
-                <th class="py-2.5 px-3 whitespace-nowrap">التوقيت</th>
+                <th class="py-2.5 px-3">المشارك</th>
+                <th class="py-2.5 px-3">الفئة</th>
+                <th class="py-2.5 px-3">بدون نبيه (A)</th>
+                <th class="py-2.5 px-3">مع نبيه (B)</th>
+                <th class="py-2.5 px-3">التقييم</th>
+                <th class="py-2.5 px-3">الملاحظات</th>
               </tr>
             </thead>
-            <tbody id="adminTableBody" class="divide-y divide-slate-100">
-              <tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد نتائج مسجلة بعد.</td></tr>
+            <tbody id="dashTableBody" class="divide-y divide-slate-100">
+              <tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد سجلات محفوظة على هذا الجهاز بعد.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- أزرار التصدير والنسخ للعرض التقديمي -->
-      <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
-        <button onclick="clearAllCloudRecords()" class="touch-btn px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition">
-          <i class="fa-solid fa-trash-can ml-1"></i> مسح السجلات التجريبية
+      <!-- أزرار التصدير والنسخ -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <button type="button" onclick="clearLocalDashboardData()" class="min-h-[42px] px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition">
+          <i class="fa-solid fa-trash-can ml-1"></i> مسح السجل المحلي
         </button>
 
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="exportResultsCsv()" class="touch-btn px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5">
+          <button type="button" onclick="exportDashboardCsv()" class="min-h-[42px] px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center gap-1.5">
             <i class="fa-solid fa-file-csv"></i>
-            <span>تصدير Excel (CSV)</span>
+            <span>تصدير CSV</span>
           </button>
-          <button onclick="copySummaryReport()" class="touch-btn px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow">
+          <button type="button" onclick="copyPresentationSummary()" class="min-h-[42px] px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow">
             <i class="fa-solid fa-copy"></i>
-            <span>نسخ ملخص النتائج لشرائح العرض</span>
+            <span>نسخ ملخص النتائج للعرض</span>
           </button>
         </div>
       </div>
+
     </div>
   </div>
 
-  <!-- إشعار منبثق (Toast) -->
-  <div id="toastBanner" style="bottom: max(18px, env(safe-area-inset-bottom));" class="fixed left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[92%] bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3">
+  <!-- شريط الإشعارات المنبثق (Toast Notification) -->
+  <div id="toastNotification" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden max-w-md w-[92%] bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3">
     <span id="toastIcon" class="text-base shrink-0"></span>
-    <p id="toastText" class="text-xs sm:text-sm font-bold flex-1"></p>
+    <p id="toastMessage" class="text-xs sm:text-sm font-bold flex-1 leading-snug"></p>
   </div>
 
-  <!-- Firebase Firestore + منطق المختبر المتكامل -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  <script>
+    // =========================================================================
+    // رابط Google Apps Script Web App للإرسال التلقائي المباشر إلى Google Sheets
+    // =========================================================================
+    const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxi53lp0jvH6W2U4ECJgQqlms1134J2DiBRNzLt5iLAQ__X9Yw0tI-VhWwGpto7eUgRdw/exec";
+    const LOCAL_STORAGE_KEY = "nabeeh_github_ab_records_v1";
 
-    // ضع رابط Google Apps Script هنا إذا أردت تثبيته مباشرة في الكود
-    const DEFAULT_GOOGLE_SHEET_WEBHOOK_URL = "";
-    const ADMIN_PIN = "1234";
-    const LOCAL_STORAGE_KEY = "nabeeh_ab_records_v1";
-    const WEBHOOK_STORAGE_KEY = "nabeeh_google_sheet_webhook";
-
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'nabeeh-ab-prototype';
-    let db = null;
-    let currentUser = null;
-    let firestoreCollectionRef = null;
-    window.cloudRecords = [];
-
-    // بنك السيناريوهات (12 سيناريو متنوع بين آمن واحتيال)
-    const SCENARIO_BANK = [
+    // =========================================================================
+    // بنك السيناريوهات السعودية الواقعية (12 سيناريو: 6 احتيال + 6 رسائل رسمية)
+    // =========================================================================
+    const SCENARIOS_BANK = [
       {
-        id: "spl_scam",
-        sender: "SPL-Delivery",
-        sub: "رسالة نصية SMS • الآن",
-        icon: "fa-solid fa-box",
-        avatarBg: "bg-amber-100 text-amber-700",
-        verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "تعذر توصيل شحنتك #SA9928 لعدم اكتمال العنوان. يرجى سداد رسوم التوصيل (12 ريال) خلال ساعتين لتجنب إرجاع الطرد:",
-        link: "https://saudipost-update-track.com/pay",
-        alertTitle: "رابط مزيف ينتحل البريد السعودي (سبل)",
-        alertDesc: "النطاق (.com) غير رسمي ويستخدم أسلوب الاستعجال لسحب بيانات بطاقتك البنكية."
-      },
-      {
-        id: "rajhi_safe",
-        sender: "AlRajhiBank",
-        sub: "رسالة بنكية موثقة • الآن",
-        icon: "fa-solid fa-building-columns",
-        avatarBg: "bg-blue-100 text-blue-700",
-        verified: true,
-        isSafe: true,
-        isFamilyAlert: false,
-        body: "رمز التحقق لتسجيل الدخول إلى تطبيق الراجحي: 4829. لا تشاركه مع أحد، وموظفو البنك لن يطلبوه منك أبداً.",
-        link: "لا توجد روابط في هذه الرسالة",
-        alertTitle: "مصدر موثق: مصرف الراجحي",
-        alertDesc: "المرسل موثق رسمياً، والرسالة خالية من الروابط وتذكّرك بعدم مشاركة الرمز."
-      },
-      {
-        id: "nafath_scam",
-        sender: "خدمة العملاء - النفاذ",
-        sub: "واتساب • رقم غير محفوظ",
-        icon: "fa-solid fa-landmark",
-        avatarBg: "bg-rose-100 text-rose-700",
-        verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "رصدنا محاولة دخول غير مصرح بها على حسابك. أكّد هويتك عبر الرابط التالي قبل إيقاف خدماتك خلال 30 دقيقة:",
-        link: "http://nafath-sa-verify-login.net/auth",
-        alertTitle: "انتحال جهة حكومية (نفاذ)",
-        alertDesc: "الجهات الحكومية لا تتواصل عبر واتساب ولا تطلب تسجيل الدخول عبر روابط خارجية (.net)."
-      },
-      {
-        id: "family_scam",
-        sender: "درع العائلة (هاتف الوالد)",
-        sub: "تنبيه حماية الأسرة • الآن",
-        icon: "fa-solid fa-people-roof",
-        avatarBg: "bg-purple-100 text-purple-700",
-        verified: true,
-        isSafe: false,
-        isFamilyAlert: true,
-        body: "وصلت للوالد رسالة: (مبروك ربحت 10,000 ريال نقداً! اضغط لاستلام الجائزة فوراً) وهو على وشك فتح الرابط:",
-        link: "https://win-prize-saudi-gift.xyz/claim",
-        alertTitle: "تم تجميد رابط جائزة وهمية عن هاتف الوالد",
-        alertDesc: "اكتشف نبيه نطاقاً احتيالياً (.xyz) ومنعه لحماية أحد أفراد الأسرة."
-      },
-      {
-        id: "muroor_scam",
-        sender: "E-Muroor-SA",
-        sub: "رسالة نصية SMS • الآن",
-        icon: "fa-solid fa-car-burst",
-        avatarBg: "bg-red-100 text-red-700",
-        verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "مخالفة مرورية رقم 774120 بقيمة 150 ريال. سدد خلال 24 ساعة بخصم 50% قبل مضاعفة الغرامة تلقائياً:",
-        link: "https://muroor-sadad-discount.info/pay",
-        alertTitle: "انتحال الإدارة العامة للمرور",
-        alertDesc: "سداد المخالفات يتم عبر نظام سداد البنكي أو منصة أبشر فقط، وليس عبر روابط (.info)."
-      },
-      {
-        id: "absher_safe",
-        sender: "Absher",
-        sub: "إشعار حكومي موثق • الآن",
-        icon: "fa-solid fa-id-card",
-        avatarBg: "bg-emerald-100 text-emerald-700",
-        verified: true,
-        isSafe: true,
-        isFamilyAlert: false,
-        body: "نذكّرك بقرب انتهاء صلاحية رخصة القيادة الخاصة بك بعد 15 يوماً. يمكنك تجديدها إلكترونياً عبر حسابك في منصة أبشر.",
-        link: "لا توجد روابط في هذه الرسالة",
-        alertTitle: "إشعار حكومي موثق من أبشر",
-        alertDesc: "المرسل رسمي وموثق، والرسالة تذكيرية فقط ولا تطلب بيانات بنكية."
-      },
-      {
-        id: "stc_scam",
-        sender: "STC-Rewards",
-        sub: "رسالة نصية SMS • الآن",
-        icon: "fa-solid fa-tower-cell",
-        avatarBg: "bg-violet-100 text-violet-700",
-        verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "لديك 4,850 نقطة قطاف تنتهي صلاحيتها اليوم! استبدلها الآن بقسيمة شرائية بقيمة 500 ريال قبل الإلغاء:",
-        link: "http://qitaf-stc-redeem-sa.com/points",
-        alertTitle: "موقع مزيف لسرقة بيانات الدخول",
-        alertDesc: "نقاط قطاف تُستبدل داخل تطبيق mystc الرسمي فقط، والرابط غير مشفر (http)."
-      },
-      {
-        id: "snb_safe",
-        sender: "SNB-AlAhli",
-        sub: "إشعار مصرفي موثق • الآن",
-        icon: "fa-solid fa-credit-card",
-        avatarBg: "bg-teal-100 text-teal-700",
-        verified: true,
-        isSafe: true,
-        isFamilyAlert: false,
-        body: "عملية شراء عبر مدى: 85.00 ريال لدى (أسواق التميمي) ببطاقة تنتهي بـ 4410. الرصيد المتاح: 3,420.50 ريال.",
-        link: "إشعار بنكي إعلامي بلا روابط",
-        alertTitle: "إشعار خصم رسمي من البنك الأهلي",
-        alertDesc: "رسالة إعلامية موثقة توثق عملية الشراء ولا تطلب منك أي إجراء."
-      },
-      {
-        id: "invest_scam",
-        sender: "مجموعة الأسهم الذهبية VIP",
-        sub: "واتساب • رقم دولي",
-        icon: "fa-solid fa-chart-line",
-        avatarBg: "bg-amber-100 text-amber-800",
-        verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "فرصة استثمارية مضمونة! ابدأ برأس مال 500 ريال واحصل على أرباح يومية ثابتة 35%. سجّل محفظتك الآن:",
-        link: "https://saudi-wealth-invest-pro.vip/register",
-        alertTitle: "منصة استثمار وهمية",
-        alertDesc: "الوعود بأرباح يومية ثابتة ومرتفعة عبر روابط (.vip) أسلوب احتيال مالي معروف."
-      },
-      {
-        id: "noon_safe",
-        sender: "noon",
-        sub: "متجر موثق • الآن",
-        icon: "fa-solid fa-bag-shopping",
-        avatarBg: "bg-yellow-100 text-yellow-700",
-        verified: true,
-        isSafe: true,
-        isFamilyAlert: false,
-        body: "تم شحن طلبك #NSA88210 بنجاح. سيتواصل معك المندوب اليوم بين 4 و 7 مساءً. يمكنك تتبع الطلب من تطبيق نون.",
-        link: "لا توجد روابط دفع في الرسالة",
-        alertTitle: "إشعار شحن رسمي من نون",
-        alertDesc: "الحساب موثق ولا يطلب رسوماً إضافية أو إدخال بيانات بطاقة."
-      },
-      {
-        id: "aramex_scam",
+        id: "scam_aramex_customs",
         sender: "Aramex-KSA",
-        sub: "رسالة نصية SMS • الآن",
-        icon: "fa-solid fa-truck-fast",
-        avatarBg: "bg-orange-100 text-orange-700",
+        channel: "رسالة نصية SMS • الآن",
+        icon: "fa-truck-fast",
+        iconStyle: "bg-orange-100 text-orange-700",
+        isScam: true,
         verified: false,
-        isSafe: false,
-        isFamilyAlert: false,
-        body: "شحنتك معلقة في الجمارك بسبب رسوم تخليص 18.50 ريال. ادفع الرسوم خلال ساعة لإطلاق الشحنة فوراً:",
-        link: "https://aramex-customs-ksa.co/fee",
-        alertTitle: "انتحال شركة أرامكس",
-        alertDesc: "النطاق (.co) مزيف، والمبلغ الصغير هدفه خداعك لإدخال رمز التحقق البنكي (OTP)."
+        body: "عميلنا العزيز، شحنتك معلقة في الجمارك لوجود رسوم تخليص (14.50 ريال). يرجى السداد عبر البطاقة البنكية خلال ساعتين لتجنب إرجاع الطرد:",
+        link: "https://aramex-customs-saudi.co/pay",
+        alertBadge: "احتيال مؤكد — انتحال شركة شحن",
+        alertHeading: "انتبه! هذا رابط مزيف ينتحل صفة أرامكس",
+        alertExplanation: "النطاق (.co) غير رسمي، ويستغل مبلغاً صغيراً (14.5 ريال) لسرقة بيانات بطاقتك البنكية ورمز التحقق (OTP)."
       },
       {
-        id: "sehhaty_safe",
-        sender: "Sehhaty",
-        sub: "منصة صحية موثقة • الآن",
-        icon: "fa-solid fa-heart-pulse",
-        avatarBg: "bg-cyan-100 text-cyan-700",
+        id: "scam_absher_update",
+        sender: "Absher-Update",
+        channel: "واتساب • +966 55 019 8821",
+        icon: "fa-id-card",
+        iconStyle: "bg-teal-100 text-teal-700",
+        isScam: true,
+        verified: false,
+        body: "تنبيه هام من منصة أبشر والنفاذ الوطني: تم رصد محاولة دخول غير مصرح بها. يرجى تأكيد هويتك فوراً قبل إيقاف خدماتك خلال 30 دقيقة:",
+        link: "http://nafath-sa-verify-login.net/auth",
+        alertBadge: "احتيال خطير — انتحال جهة حكومية",
+        alertHeading: "تحذير: محاولة سرقة حساب النفاذ الوطني!",
+        alertExplanation: "الجهات الحكومية لا تتواصل عبر أرقام واتساب شخصية ولا ترسل روابط تطلب تسجيل الدخول. الرابط غير مشفر (http) ومزور."
+      },
+      {
+        id: "scam_bank_suspend",
+        sender: "AlRajhi-Alert",
+        channel: "رسالة نصية SMS • الآن",
+        icon: "fa-building-columns",
+        iconStyle: "bg-rose-100 text-rose-700",
+        isScam: true,
+        verified: false,
+        body: "عزيزي العميل، تم تعليق حسابك البنكي مؤقتاً لعدم تحديث بيانات الهوية الوطنية. يرجى التحديث فوراً لتفادي تجميد الرصيد:",
+        link: "https://alrajhi-kyc-update-sa.com/verify",
+        alertBadge: "تصيّد بنكي مؤكد",
+        alertHeading: "رابط مزيف يهدف لسرقة حسابك البنكي!",
+        alertExplanation: "البنوك السعودية لا تطلب تحديث الهوية عبر روابط SMS خارجية، والنطاق (.com) ينتحل اسم البنك."
+      },
+      {
+        id: "scam_spl_parcel",
+        sender: "SPL-Delivery",
+        channel: "رسالة نصية SMS • منذ دقيقة",
+        icon: "fa-box",
+        iconStyle: "bg-amber-100 text-amber-700",
+        isScam: true,
+        verified: false,
+        body: "تعذر توصيل شحنتك رقم #SA9928 لعدم اكتمال العنوان الوطني. يرجى تحديث العنوان وسداد رسوم إعادة التوصيل (12 ريال):",
+        link: "https://saudipost-update-track.com/fee",
+        alertBadge: "احتيال توصيل طرود",
+        alertHeading: "انتحال البريد السعودي (سبل)",
+        alertExplanation: "الموقع الرسمي للبريد السعودي ينتهي بـ (.gov.sa) وليس (.com)، وهذه الرسالة تستخدم الاستعجال لخداعك."
+      },
+      {
+        id: "scam_muroor_discount",
+        sender: "E-Muroor-SA",
+        channel: "رسالة نصية SMS • الآن",
+        icon: "fa-car-burst",
+        iconStyle: "bg-red-100 text-red-700",
+        isScam: true,
+        verified: false,
+        body: "تم رصد مخالفة مرورية بقيمة 150 ريال. للاستفادة من خصم 50% قبل مضاعفة الغرامة خلال 24 ساعة سدد الآن عبر الرابط:",
+        link: "https://muroor-sadad-discount.info/pay",
+        alertBadge: "رابط سداد وهمي",
+        alertHeading: "انتحال الإدارة العامة للمرور!",
+        alertExplanation: "سداد المخالفات المرورية يتم حصراً عبر نظام سداد في تطبيقات البنوك الرسمية أو منصة أبشر."
+      },
+      {
+        id: "scam_qitaf_points",
+        sender: "STC-Rewards",
+        channel: "رسالة نصية SMS • الآن",
+        icon: "fa-gift",
+        iconStyle: "bg-purple-100 text-purple-700",
+        isScam: true,
+        verified: false,
+        body: "لديك 4,850 نقطة في برنامج قطاف ستنتهي صلاحيتها اليوم! استبدلها الآن بقسيمة شرائية بقيمة 500 ريال قبل الإلغاء:",
+        link: "http://qitaf-stc-redeem-sa.com/points",
+        alertBadge: "احتيال استبدال نقاط",
+        alertHeading: "موقع مزيف لسرقة بيانات الدخول!",
+        alertExplanation: "نقاط قطاف تُستبدل فقط من داخل تطبيق mystc الرسمي، والرابط المرفق غير آمن ومزيف."
+      },
+      {
+        id: "real_nafath_code",
+        sender: "Nafath",
+        channel: "رسالة حكومية موثقة • الآن",
+        icon: "fa-fingerprint",
+        iconStyle: "bg-emerald-100 text-emerald-700",
+        isScam: false,
         verified: true,
-        isSafe: true,
-        isFamilyAlert: false,
+        body: "رمز التحقق للدخول عبر النفاذ الوطني الموحد هو: 64. لا تشارك الرمز مع أي شخص، وتأكد من مطابقة الرقم الظاهر في شاشة التطبيق.",
+        link: "إشعار رسمي موثق (بدون روابط خارجية)",
+        alertBadge: "رسالة حكومية موثقة وآمنة 100%",
+        alertHeading: "مصدر موثق: النفاذ الوطني الموحد",
+        alertExplanation: "المرسل موثق رسمياً والرسالة خالية من أي روابط مشبوهة وتذكّرك بعدم مشاركة الرمز مع أي شخص."
+      },
+      {
+        id: "real_bank_alert",
+        sender: "SNB-AlAhli",
+        channel: "إشعار بنكي موثق • منذ دقيقة",
+        icon: "fa-receipt",
+        iconStyle: "bg-emerald-100 text-emerald-700",
+        isScam: false,
+        verified: true,
+        body: "عملية شراء عبر مدى: مبلغ 85.00 ريال لدى (أسواق التميمي) ببطاقة تنتهي بـ 4410. الرصيد المتاح: 3,420.50 ريال.",
+        link: "إشعار عملية بنكية موثقة",
+        alertBadge: "إشعار بنكي موثق وآمن",
+        alertHeading: "إشعار خصم رسمي من البنك الأهلي",
+        alertExplanation: "رسالة إعلامية موثقة من البنك لا تحتوي على روابط دفع ولا تطلب إدخال أي بيانات سرية."
+      },
+      {
+        id: "real_courier_code",
+        sender: "noon",
+        channel: "واتساب موثق بعلامة خضراء • الآن",
+        icon: "fa-bag-shopping",
+        iconStyle: "bg-yellow-100 text-yellow-700",
+        isScam: false,
+        verified: true,
+        body: "مندوب التوصيل في طريقه إليك لتسليم طلبك رقم #NSA88210. رمز التسليم الخاص بك هو (5190) — زوّد المندوب بالرمز عند استلام الطلب فقط.",
+        link: "حساب تجاري موثق (بدون روابط دفع)",
+        alertBadge: "حساب موثق وآمن",
+        alertHeading: "إشعار توصيل رسمي من متجر نون",
+        alertExplanation: "الحساب يحمل شارة التوثيق الرسمية ولا يطلب منك دفع أي رسوم عبر روابط خارجية."
+      },
+      {
+        id: "real_absher_reminder",
+        sender: "Absher",
+        channel: "رسالة حكومية موثقة • منذ 3 دقائق",
+        icon: "fa-landmark",
+        iconStyle: "bg-emerald-100 text-emerald-700",
+        isScam: false,
+        verified: true,
+        body: "عزيزي المستفيد، نذكّرك بقرب انتهاء صلاحية رخصة القيادة الخاصة بك بعد 15 يوماً. يمكنك تجديدها إلكترونياً عبر حسابك في منصة أبشر.",
+        link: "إشعار تذكير رسمي (لا يتطلب النقر على روابط)",
+        alertBadge: "رسالة حكومية آمنة",
+        alertHeading: "تذكير رسمي موثق من منصة أبشر",
+        alertExplanation: "الرسالة صادرة من حساب أبشر الرسمي الموثق ولا تطلب إدخال بيانات بنكية أو كلمات مرور."
+      },
+      {
+        id: "real_sehaty_appointment",
+        sender: "Sehhaty",
+        channel: "رسالة صحية موثقة • منذ 5 دقائق",
+        icon: "fa-heart-pulse",
+        iconStyle: "bg-emerald-100 text-emerald-700",
+        isScam: false,
+        verified: true,
         body: "تم تأكيد موعدك في مركز الرعاية الصحية الأولية غداً الساعة 10:30 صباحاً. نرجو الحضور قبل الموعد بـ 10 دقائق.",
-        link: "لا توجد روابط في هذه الرسالة",
-        alertTitle: "إشعار موعد رسمي من صحتي",
-        alertDesc: "صادرة من حساب موثق ولا تطلب أي بيانات شخصية أو مالية."
+        link: "إشعار موعد طبي رسمي عبر تطبيق صحتي",
+        alertBadge: "جهة صحية موثقة وآمنة",
+        alertHeading: "إشعار رسمي من منصة صحتي",
+        alertExplanation: "المرسل موثق رسمياً ولا توجد أي روابط مشبوهة أو طلبات مالية في الرسالة."
+      },
+      {
+        id: "real_rajhi_otp",
+        sender: "AlRajhiBank",
+        channel: "رسالة بنكية موثقة • الآن",
+        icon: "fa-shield-check",
+        iconStyle: "bg-emerald-100 text-emerald-700",
+        isScam: false,
+        verified: true,
+        body: "رمز التحقق (OTP) لتسجيل الدخول إلى تطبيق مصرف الراجحي هو: 4829. موظفو البنك لن يطلبوا منك هذا الرمز أبداً.",
+        link: "إشعار بنكي رسمي موثق",
+        alertBadge: "رسالة بنكية موثقة وآمنة",
+        alertHeading: "مصدر موثق: مصرف الراجحي",
+        alertExplanation: "الرسالة صادرة من الحساب الرسمي للمصرف وخالية من الروابط وتنبهك لحماية رمزك."
       }
     ];
 
-    // حالة الجلسة الحالية
-    let nabeehEnabled = false; // يبدأ بـ A (بدون نبيه) ثم يتفعّل تلقائياً لـ B (مع نبيه)
-    let seniorMode = false;
-    let currentQuestions = [];
+    // =========================================================================
+    // متغيرات حالة التجربة
+    // =========================================================================
+    let participantName = "مشارك مجهول";
+    let participantAge = "شباب (18-35)";
+    let currentStage = 1; // 1 = بدون نبيه، 2 = مع نبيه مفعّل تلقائياً
+    let stageQuestions = [];
     let currentQIndex = 0;
-    let currentAnswers = []; // [{ isCorrect, timeSec, sender, isSafe }]
-    let usedScenarioIds = new Set();
     let questionStartTime = Date.now();
     let timerInterval = null;
-    let autoActivateTimer = null;
-    let roundStats = { A: null, B: null };
-    let sessionLogs = [];
+    let isLocked = false;
+    let usedScenarioIds = new Set();
 
-    // عناصر الواجهة
-    const el = (id) => document.getElementById(id);
+    let stage1Answers = [];
+    let stage2Answers = [];
+    let stage1Metrics = null;
+    let stage2Metrics = null;
 
-    // تهيئة قاعدة البيانات السحابية + المحلية
-    async function initCloudDatabase() {
-      const dot = el('cloudStatusDot');
-      const label = el('cloudStatusLabel');
+    let selectedStars = 5;
+    let selectedFeature = "وضوح التحذير المبسط";
+    let isFeedbackSubmitted = false;
 
-      // تحميل السجلات المحلية المبدئية
-      window.cloudRecords = loadLocalRecords();
-      window.renderAdminDashboard();
+    // =========================================================================
+    // إدارة التنقل بين الشاشات
+    // =========================================================================
+    function showScreen(screenId) {
+      const screens = ["screenIntro", "screenTest", "screenTransition", "screenFinal"];
+      screens.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === screenId) {
+          el.classList.remove("hidden");
+        } else {
+          el.classList.add("hidden");
+        }
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-      // تحميل رابط Google Sheets المحفوظ إن وجد
-      const savedWebhook = getGoogleSheetWebhook();
-      if (savedWebhook && el('googleSheetUrlInput')) {
-        el('googleSheetUrlInput').value = savedWebhook;
-        el('webhookSavedBadge').textContent = "مُفعّل";
-        el('webhookSavedBadge').className = "text-[11px] font-bold text-emerald-600";
+    // اختيار 4 سيناريوهات عشوائية متوازنة (2 احتيال + 2 آمنة) دون تكرار من المرحلة السابقة
+    function pickFourBalancedScenarios() {
+      const scams = SCENARIOS_BANK.filter(s => s.isScam && !usedScenarioIds.has(s.id));
+      const legits = SCENARIOS_BANK.filter(s => !s.isScam && !usedScenarioIds.has(s.id));
+
+      const scamPool = scams.length >= 2 ? scams : SCENARIOS_BANK.filter(s => s.isScam);
+      const legitPool = legits.length >= 2 ? legits : SCENARIOS_BANK.filter(s => !s.isScam);
+
+      const chosenScams = [...scamPool].sort(() => Math.random() - 0.5).slice(0, 2);
+      const chosenLegits = [...legitPool].sort(() => Math.random() - 0.5).slice(0, 2);
+
+      const combined = [...chosenScams, ...chosenLegits].sort(() => Math.random() - 0.5);
+      combined.forEach(item => usedScenarioIds.add(item.id));
+      return combined;
+    }
+
+    // بدء التجربة من الشاشة الترحيبية (تدخل مباشرة إلى المرحلة 1: بدون حماية نبيه)
+    function startExperiment() {
+      const rawName = document.getElementById("inputParticipantName").value.trim();
+      participantName = rawName || "مشارك مجهول";
+      participantAge = document.getElementById("selectAgeGroup").value;
+
+      usedScenarioIds.clear();
+      stage1Answers = [];
+      stage2Answers = [];
+      stage1Metrics = null;
+      stage2Metrics = null;
+      isFeedbackSubmitted = false;
+
+      setupStage(1);
+      showScreen("screenTest");
+    }
+
+    // تهيئة المرحلة 1 (بدون نبيه) أو المرحلة 2 (درع نبيه مفعّل تلقائياً)
+    function setupStage(stageNum) {
+      currentStage = stageNum;
+      stageQuestions = pickFourBalancedScenarios();
+      currentQIndex = 0;
+      isLocked = false;
+
+      const navBadge = document.getElementById("navStageBadge");
+      const banner = document.getElementById("stageStatusBanner");
+      const bannerIcon = document.getElementById("stageBannerIcon");
+      const bannerTitle = document.getElementById("stageBannerTitle");
+      const bannerSub = document.getElementById("stageBannerSub");
+      const phoneShell = document.getElementById("smartphoneFrame");
+      const phoneNabeehHeader = document.getElementById("phoneNabeehHeader");
+      const smsFootNote = document.getElementById("smsStageFootNote");
+
+      if (stageNum === 1) {
+        navBadge.className = "px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        navBadge.textContent = "المرحلة 1/2: بدون نبيه";
+
+        banner.className = "rounded-3xl p-4 border-2 transition-all duration-300 shadow-sm bg-rose-50 border-rose-300";
+        bannerIcon.className = "w-11 h-11 rounded-2xl bg-rose-600 text-white flex items-center justify-center text-xl shrink-0 shadow";
+        bannerIcon.innerHTML = '<i class="fa-solid fa-shield-xmark"></i>';
+        bannerTitle.className = "text-sm sm:text-base font-black text-rose-950 truncate";
+        bannerTitle.textContent = "المرحلة الأولى: بدون حماية نبيه";
+        bannerSub.className = "text-xs text-rose-800 truncate";
+        bannerSub.textContent = "افحص الرسالة والرابط بنفسك واتخذ قرارك";
+
+        phoneShell.classList.remove("shield-active-ring");
+        phoneShell.style.borderColor = "#1e293b";
+        phoneNabeehHeader.classList.add("hidden");
+        smsFootNote.className = "font-bold text-rose-600";
+        smsFootNote.textContent = "بدون فحص نبيه";
+      } else {
+        navBadge.className = "px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        navBadge.textContent = "المرحلة 2/2: درع نبيه نشط";
+
+        banner.className = "rounded-3xl p-4 border-2 transition-all duration-300 shadow-md bg-emerald-50 border-emerald-400";
+        bannerIcon.className = "w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-xl shrink-0 shadow";
+        bannerIcon.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
+        bannerTitle.className = "text-sm sm:text-base font-black text-emerald-950 truncate";
+        bannerTitle.textContent = "المرحلة الثانية: درع نبيه مفعّل تلقائياً";
+        bannerSub.className = "text-xs text-emerald-800 truncate";
+        bannerSub.textContent = "يحلل نبيه الرسائل وينبهك بلغة مبسطة";
+
+        phoneShell.classList.add("shield-active-ring");
+        phoneShell.style.borderColor = "#059669";
+        phoneNabeehHeader.classList.remove("hidden");
+        smsFootNote.className = "font-extrabold text-emerald-700";
+        smsFootNote.textContent = "محمي بدرع نبيه ✓";
       }
 
-      try {
-        if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-          if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-          if (label) label.textContent = "جاهز للتخزين + Google Sheets";
-          return;
-        }
+      renderCurrentScenario();
+      startTimer();
+    }
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        db = getFirestore(app);
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      questionStartTime = Date.now();
+      timerInterval = setInterval(() => {
+        const sec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
+        const timerEl = document.getElementById("liveQuestionTimer");
+        if (timerEl) timerEl.textContent = `${sec} ث`;
+      }, 100);
+    }
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
+    // عرض السيناريو الحالي داخل شاشة الهاتف
+    function renderCurrentScenario() {
+      const q = stageQuestions[currentQIndex];
+      if (!q) return;
+
+      document.getElementById("questionProgressText").textContent = `${currentQIndex + 1} / 4`;
+
+      // تحديث شريط التقدم الرباعي
+      for (let i = 0; i < 4; i++) {
+        const bar = document.getElementById(`progStep${i}`);
+        if (currentStage === 1) {
+          bar.className = i <= currentQIndex
+            ? "h-1.5 rounded-full bg-rose-600 transition-all"
+            : "h-1.5 rounded-full bg-rose-200 transition-all";
         } else {
-          await signInAnonymously(auth);
+          bar.className = i <= currentQIndex
+            ? "h-1.5 rounded-full bg-emerald-600 transition-all"
+            : "h-1.5 rounded-full bg-emerald-200 transition-all";
         }
+      }
 
-        onAuthStateChanged(auth, (user) => {
-          currentUser = user;
-          if (user) {
-            if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-            if (label) label.textContent = "متصل بقاعدة البيانات السحابية";
-            firestoreCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'nabeeh_ab_results');
+      document.getElementById("smsSenderName").textContent = q.sender;
+      document.getElementById("smsChannelText").textContent = q.channel;
+      document.getElementById("smsBodyText").textContent = q.body;
 
-            onSnapshot(firestoreCollectionRef, (snapshot) => {
-              const docs = [];
-              snapshot.forEach((docSnap) => {
-                docs.push({ _docId: docSnap.id, ...docSnap.data() });
-              });
-              docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
-              window.cloudRecords = docs;
-              saveLocalRecords(docs);
-              window.renderAdminDashboard();
-            }, (err) => {
-              console.warn("Firestore listener fallback:", err);
-            });
-          }
-        });
-      } catch (e) {
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-        if (label) label.textContent = "جاهز للتخزين المحلي + Sheets";
+      const avatarEl = document.getElementById("smsAvatar");
+      avatarEl.className = `w-10 h-10 rounded-full flex items-center justify-center text-base font-bold shrink-0 ${q.iconStyle}`;
+      avatarEl.innerHTML = `<i class="fa-solid ${q.icon}"></i>`;
+
+      const verifiedEl = document.getElementById("smsVerifiedBadge");
+      if (q.verified) verifiedEl.classList.remove("hidden");
+      else verifiedEl.classList.add("hidden");
+
+      const linkBox = document.getElementById("smsLinkBox");
+      linkBox.textContent = q.link;
+
+      const analysisCard = document.getElementById("nabeehAnalysisCard");
+
+      if (currentStage === 2) {
+        // المرحلة الثانية: إظهار تحليل نبيه الواضح والبسيط
+        analysisCard.classList.remove("hidden");
+        document.getElementById("analysisBadge").textContent = q.alertBadge;
+        document.getElementById("analysisHeading").textContent = q.alertHeading;
+        document.getElementById("analysisExplanation").textContent = q.alertExplanation;
+
+        if (q.isScam) {
+          analysisCard.className = "rounded-2xl p-4 border-2 border-rose-500 bg-rose-50 text-rose-950 space-y-2 shadow-lg transition-all";
+          document.getElementById("analysisBadge").className = "text-[11px] font-black px-2.5 py-1 rounded-lg bg-rose-600 text-white";
+          linkBox.className = "p-3 rounded-xl bg-rose-100/80 border border-rose-300 text-xs font-mono text-rose-800 line-through break-all";
+        } else {
+          analysisCard.className = "rounded-2xl p-4 border-2 border-emerald-500 bg-emerald-50 text-emerald-950 space-y-2 shadow-md transition-all";
+          document.getElementById("analysisBadge").className = "text-[11px] font-black px-2.5 py-1 rounded-lg bg-emerald-600 text-white";
+          linkBox.className = "p-3 rounded-xl bg-emerald-100/80 border border-emerald-300 text-xs font-bold text-emerald-900 break-all";
+        }
+      } else {
+        // المرحلة الأولى: إخفاء تحليل نبيه وعرض الرسالة بصورتها الخام
+        analysisCard.classList.add("hidden");
+        linkBox.className = q.isScam
+          ? "p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-blue-600 underline break-all"
+          : "p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 break-all";
       }
     }
 
-    function loadLocalRecords() {
+    // القراءة الصوتية لتحليل نبيه باللغة العربية (Web Speech API)
+    function speakNabeehAnalysis() {
+      const q = stageQuestions[currentQIndex];
+      if (!q) return;
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(`${q.alertHeading}. ${q.alertExplanation}`);
+        utterance.lang = "ar-SA";
+        utterance.rate = 0.92;
+        window.speechSynthesis.speak(utterance);
+        showToast("جاري قراءة تحليل نبيه صوتياً...", "success");
+      } else {
+        showToast("المتصفح لا يدعم القراءة الصوتية.", "warning");
+      }
+    }
+
+    // معالجة إجابة المشارك
+    function handleUserAnswer(userChoice) {
+      if (isLocked) return;
+      isLocked = true;
+
+      const q = stageQuestions[currentQIndex];
+      const timeTaken = parseFloat(Math.max(0.6, (Date.now() - questionStartTime) / 1000).toFixed(1));
+      const isCorrect = (q.isScam && userChoice === "scam") || (!q.isScam && userChoice === "safe");
+
+      const answerRecord = {
+        id: q.id,
+        isCorrect: isCorrect,
+        timeSec: timeTaken
+      };
+
+      if (currentStage === 1) {
+        stage1Answers.push(answerRecord);
+      } else {
+        stage2Answers.push(answerRecord);
+      }
+
+      if (isCorrect) {
+        showToast(`إجابة صحيحة خلال ${timeTaken} ثانية!`, "success");
+      } else {
+        const msg = currentStage === 1
+          ? `إجابة خاطئة (${timeTaken} ث) — ستلاحظ الفرق عند تفعيل درع نبيه!`
+          : `إجابة خاطئة (${timeTaken} ث) — راجع تنبيه نبيه في الأعلى.`;
+        showToast(msg, "danger");
+      }
+
+      setTimeout(() => {
+        if (currentQIndex < 3) {
+          currentQIndex++;
+          isLocked = false;
+          renderCurrentScenario();
+          startTimer();
+        } else {
+          if (timerInterval) clearInterval(timerInterval);
+          completeCurrentStage();
+        }
+      }, 650);
+    }
+
+    // حساب مقاييس المرحلة وإرسالها تلقائياً إلى Google Sheets
+    function computeMetrics(answersList) {
+      const correctCount = answersList.filter(a => a.isCorrect).length;
+      const accuracy = Math.round((correctCount / 4) * 100);
+      const avgTime = parseFloat((answersList.reduce((sum, a) => sum + a.timeSec, 0) / 4).toFixed(1));
+      return { correctCount, accuracy, avgTime };
+    }
+
+    function completeCurrentStage() {
+      if (currentStage === 1) {
+        stage1Metrics = computeMetrics(stage1Answers);
+
+        // إرسال نتيجة المرحلة الأولى تلقائياً إلى Google Sheets
+        sendToGoogleSheets({
+          name: participantName,
+          age: participantAge,
+          mode: "بدون نبيه (A)",
+          score: `${stage1Metrics.correctCount}/4 (${stage1Metrics.accuracy}%)`,
+          time: `${stage1Metrics.avgTime} ث`,
+          rating: "قيد التقييم",
+          comment: "-"
+        });
+
+        document.getElementById("transStage1Score").textContent = `${stage1Metrics.correctCount}/4 (${stage1Metrics.accuracy}%)`;
+        document.getElementById("transStage1Time").textContent = `${stage1Metrics.avgTime} ث`;
+        document.getElementById("navStageBadge").textContent = "اكتملت المرحلة 1";
+        showScreen("screenTransition");
+      } else {
+        stage2Metrics = computeMetrics(stage2Answers);
+
+        // إرسال نتيجة المرحلة الثانية تلقائياً إلى Google Sheets
+        sendToGoogleSheets({
+          name: participantName,
+          age: participantAge,
+          mode: "مع نبيه (B)",
+          score: `${stage2Metrics.correctCount}/4 (${stage2Metrics.accuracy}%)`,
+          time: `${stage2Metrics.avgTime} ث`,
+          rating: "قيد التقييم",
+          comment: "-"
+        });
+
+        // حفظ السجل الكامل في localStorage للوحة المشرف
+        saveRunToLocalStorage({
+          timestamp: new Date().toISOString(),
+          name: participantName,
+          age: participantAge,
+          accA: stage1Metrics.accuracy,
+          correctA: stage1Metrics.correctCount,
+          timeA: stage1Metrics.avgTime,
+          accB: stage2Metrics.accuracy,
+          correctB: stage2Metrics.correctCount,
+          timeB: stage2Metrics.avgTime,
+          rating: null,
+          comment: ""
+        });
+
+        prepareFinalScreen();
+        showScreen("screenFinal");
+      }
+    }
+
+    function startStageTwo() {
+      setupStage(2);
+      showScreen("screenTest");
+      showToast("تم تفعيل درع نبيه الذكي! أجب على الـ 4 رسائل الجديدة.", "success");
+    }
+
+    // تجهيز الشاشة النهائية للمقارنة والتقييم
+    function prepareFinalScreen() {
+      document.getElementById("navStageBadge").className = "px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40";
+      document.getElementById("navStageBadge").textContent = "النتيجة والتقييم";
+
+      document.getElementById("finalScoreA").textContent = `${stage1Metrics.accuracy}%`;
+      document.getElementById("finalFractionA").textContent = `${stage1Metrics.correctCount} من 4 صحيحة`;
+      document.getElementById("finalTimeA").textContent = `السرعة: ${stage1Metrics.avgTime} ث`;
+
+      document.getElementById("finalScoreB").textContent = `${stage2Metrics.accuracy}%`;
+      document.getElementById("finalFractionB").textContent = `${stage2Metrics.correctCount} من 4 صحيحة`;
+      document.getElementById("finalTimeB").textContent = `السرعة: ${stage2Metrics.avgTime} ث`;
+
+      selectedStars = 5;
+      selectStarRating(5);
+      document.getElementById("inputFeedbackComment").value = "";
+      document.getElementById("feedbackFormContainer").classList.remove("hidden");
+      document.getElementById("feedbackSentConfirmation").classList.add("hidden");
+    }
+
+    // تقييم النجوم
+    function selectStarRating(stars) {
+      selectedStars = stars;
+      const descriptions = {
+        1: "يحتاج تحسين كبير (1 من 5)",
+        2: "مقبول (2 من 5)",
+        3: "جيد (3 من 5)",
+        4: "مفيد جداً (4 من 5)",
+        5: "ممتاز وواضح جداً (5 من 5)"
+      };
+      document.getElementById("starLabelDesc").textContent = descriptions[stars];
+
+      const starButtons = document.querySelectorAll(".star-btn");
+      starButtons.forEach((btn, idx) => {
+        if (idx < stars) {
+          btn.classList.remove("text-slate-300");
+          btn.classList.add("text-amber-400");
+        } else {
+          btn.classList.remove("text-amber-400");
+          btn.classList.add("text-slate-300");
+        }
+      });
+    }
+
+    // اختيار الميزة المفضلة
+    function selectFeatureChip(featureText, btnElement) {
+      selectedFeature = featureText;
+      document.querySelectorAll(".feat-chip").forEach(chip => {
+        chip.className = "feat-chip min-h-[46px] px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold text-right transition";
+        chip.textContent = chip.textContent.replace("✓ ", "• ");
+      });
+      btnElement.className = "feat-chip min-h-[46px] px-3 py-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-950 text-xs font-extrabold text-right transition";
+      btnElement.textContent = btnElement.textContent.replace("• ", "✓ ");
+    }
+
+    // إرسال التقييم النهائي والملاحظات إلى Google Sheets
+    function submitFinalFeedback() {
+      if (isFeedbackSubmitted) return;
+      isFeedbackSubmitted = true;
+
+      const userComment = document.getElementById("inputFeedbackComment").value.trim();
+      const combinedComment = userComment
+        ? `الميزة المفضلة: ${selectedFeature} | ملاحظة: ${userComment}`
+        : `الميزة المفضلة: ${selectedFeature}`;
+
+      sendToGoogleSheets({
+        name: participantName,
+        age: participantAge,
+        mode: "تقييم نهائي",
+        score: `A: ${stage1Metrics.accuracy}% -> B: ${stage2Metrics.accuracy}%`,
+        time: `A: ${stage1Metrics.avgTime}ث -> B: ${stage2Metrics.avgTime}ث`,
+        rating: `${selectedStars}/5`,
+        comment: combinedComment
+      });
+
+      // تحديث آخر سجل في localStorage بالتقييم والملاحظة
+      const records = getLocalRecords();
+      if (records.length > 0) {
+        records[0].rating = selectedStars;
+        records[0].comment = combinedComment;
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
+      }
+
+      document.getElementById("feedbackFormContainer").classList.add("hidden");
+      document.getElementById("feedbackSentConfirmation").classList.remove("hidden");
+      showToast("تم إرسال تقييمك وحفظ النتيجة في Google Sheets!", "success");
+    }
+
+    // إعادة التجربة بالكامل بأسئلة جديدة تماماً
+    function retryFullExperiment() {
+      stage1Answers = [];
+      stage2Answers = [];
+      stage1Metrics = null;
+      stage2Metrics = null;
+      isFeedbackSubmitted = false;
+
+      // تصفير سجل الأسئلة المستخدمة إذا استُهلكت معظم الأسئلة لضمان تجديد مستمر
+      if (usedScenarioIds.size >= 8) {
+        usedScenarioIds.clear();
+      }
+
+      setupStage(1);
+      showScreen("screenTest");
+      showToast("بدأت تجربة جديدة بأسئلة مختلفة من المرحلة الأولى!", "success");
+    }
+
+    // =========================================================================
+    // الإرسال إلى Google Sheets Webhook والتخزين المحلي (localStorage)
+    // =========================================================================
+    async function sendToGoogleSheets(payload) {
+      if (!GOOGLE_SHEET_WEBHOOK_URL) return;
+      try {
+        await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.warn("Google Sheets sync warning:", err);
+      }
+    }
+
+    function getLocalRecords() {
       try {
         return JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "[]");
       } catch (e) {
@@ -944,667 +1270,176 @@
       }
     }
 
-    function saveLocalRecords(list) {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
-      } catch (e) {}
+    function saveRunToLocalStorage(record) {
+      const records = getLocalRecords();
+      records.unshift(record);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
     }
 
-    function getGoogleSheetWebhook() {
-      try {
-        return localStorage.getItem(WEBHOOK_STORAGE_KEY) || DEFAULT_GOOGLE_SHEET_WEBHOOK_URL;
-      } catch (e) {
-        return DEFAULT_GOOGLE_SHEET_WEBHOOK_URL;
-      }
+    // =========================================================================
+    // إدارة لوحة المشرف (Admin Dashboard - PIN: 1234)
+    // =========================================================================
+    function openAdminPinModal() {
+      document.getElementById("inputAdminPin").value = "";
+      document.getElementById("adminPinError").classList.add("hidden");
+      const modal = document.getElementById("modalAdminPin");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      setTimeout(() => document.getElementById("inputAdminPin").focus(), 100);
     }
 
-    window.saveGoogleSheetWebhook = function () {
-      const url = el('googleSheetUrlInput').value.trim();
-      try {
-        localStorage.setItem(WEBHOOK_STORAGE_KEY, url);
-      } catch (e) {}
-      el('webhookSavedBadge').textContent = url ? "تم الحفظ ✓" : "غير محدد";
-      el('webhookSavedBadge').className = url ? "text-[11px] font-bold text-emerald-600" : "text-[11px] font-bold text-slate-500";
-      showToast(url ? "تم حفظ رابط Google Sheets بنجاح" : "تم مسح الرابط", "fa-solid fa-check-circle text-emerald-400");
-    };
-
-    // اختيار 4 سيناريوهات متوازنة (2 آمنة + 2 احتيال) دون تكرار بين الجولتين
-    function pickFourBalancedScenarios() {
-      const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
-      const getTwo = (safeFlag) => {
-        const pool = SCENARIO_BANK.filter((s) => s.isSafe === safeFlag);
-        const unused = pool.filter((s) => !usedScenarioIds.has(s.id));
-        const source = unused.length >= 2 ? unused : pool;
-        return shuffle(source).slice(0, 2);
-      };
-      const picked = shuffle([...getTwo(false), ...getTwo(true)]);
-      picked.forEach((s) => usedScenarioIds.add(s.id));
-      return picked;
+    function closeAdminPinModal() {
+      const modal = document.getElementById("modalAdminPin");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
     }
 
-    // تحديث مظهر درع نبيه وجميع المؤشرات
-    function syncNabeehUI() {
-      const shieldCard = el('shieldCard');
-      const modeTag = el('modeTag');
-      const shieldIconBox = el('shieldIconBox');
-      const shieldHeading = el('shieldHeading');
-      const shieldDesc = el('shieldDesc');
-      const switchBtn = el('shieldSwitchBtn');
-      const switchKnob = el('shieldSwitchKnob');
-      const protectionLabel = el('protectionLabel');
-      const protectionFill = el('protectionFill');
-      const accessCard = el('nabeehAccessibilityCard');
-      const accessPill = el('accessStatePill');
-      const phoneBanner = el('phoneShieldBanner');
-      const mobileBar = el('mobilePhaseBar');
-      const mobileText = el('mobilePhaseText');
-
-      if (nabeehEnabled) {
-        shieldCard.className = "bg-white rounded-3xl p-4 sm:p-5 border-2 border-emerald-500 shadow-lg transition-all";
-        modeTag.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800";
-        modeTag.textContent = "الوضع B: مع درع نبيه 🛡️";
-        shieldIconBox.className = "w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl transition-all shrink-0 shield-glow";
-        shieldHeading.textContent = "درع نبيه نشط الآن";
-        shieldDesc.textContent = "يحلل الروابط وينبّهك فوراً قبل اتخاذ القرار";
-        switchBtn.className = "touch-btn w-16 h-9 rounded-full bg-emerald-600 p-1 flex items-center justify-end transition-colors cursor-pointer shrink-0 shadow-inner";
-        switchKnob.textContent = "ON";
-        switchKnob.className = "w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-emerald-700 flex items-center justify-center transition-transform";
-        protectionLabel.textContent = "96% (حماية استباقية عالية)";
-        protectionLabel.className = "text-emerald-600 font-extrabold";
-        protectionFill.style.width = "96%";
-        protectionFill.className = "h-full bg-emerald-500 transition-all duration-500 rounded-full";
-
-        accessCard.classList.remove("opacity-60", "pointer-events-none");
-        accessPill.textContent = "مُفعّل";
-        accessPill.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
-        phoneBanner.classList.remove("hidden");
-
-        mobileBar.className = "w-full max-w-[410px] mb-2.5 px-3.5 py-2 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-950 flex items-center justify-between text-xs font-extrabold transition-all";
-        mobileText.innerHTML = `<i class="fa-solid fa-shield-halved text-emerald-600"></i><span>المرحلة 2 من 2: درع نبيه مُفعّل (B)</span>`;
+    function checkAdminPin() {
+      const pin = document.getElementById("inputAdminPin").value.trim();
+      if (pin === "1234") {
+        closeAdminPinModal();
+        renderAdminDashboard();
+        const dash = document.getElementById("modalAdminDashboard");
+        dash.classList.remove("hidden");
+        dash.classList.add("flex");
       } else {
-        shieldCard.className = "bg-white rounded-3xl p-4 sm:p-5 border-2 border-slate-200 shadow-md transition-all";
-        modeTag.className = "text-xs font-extrabold px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800";
-        modeTag.textContent = "الوضع A: بدون حماية نبيه";
-        shieldIconBox.className = "w-12 h-12 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center text-2xl transition-all shrink-0";
-        shieldHeading.textContent = "درع نبيه متوقف";
-        shieldDesc.textContent = "تظهر الرسائل بصورتها الخام دون تنبيه";
-        switchBtn.className = "touch-btn w-16 h-9 rounded-full bg-slate-300 p-1 flex items-center justify-start transition-colors cursor-pointer shrink-0 shadow-inner";
-        switchKnob.textContent = "OFF";
-        switchKnob.className = "w-7 h-7 rounded-full bg-white shadow text-[11px] font-black text-slate-700 flex items-center justify-center transition-transform";
-        protectionLabel.textContent = "15% (معرّض للاحتيال)";
-        protectionLabel.className = "text-rose-600 font-extrabold";
-        protectionFill.style.width = "15%";
-        protectionFill.className = "h-full bg-rose-500 transition-all duration-500 rounded-full";
-
-        accessCard.classList.add("opacity-60", "pointer-events-none");
-        accessPill.textContent = "مقفل";
-        accessPill.className = "text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500";
-        phoneBanner.classList.add("hidden");
-
-        mobileBar.className = "w-full max-w-[410px] mb-2.5 px-3.5 py-2 rounded-2xl bg-rose-100 border border-rose-200 text-rose-900 flex items-center justify-between text-xs font-extrabold transition-all";
-        mobileText.innerHTML = `<i class="fa-solid fa-shield-xmark text-rose-600"></i><span>المرحلة 1 من 2: بدون حماية نبيه (A)</span>`;
+        document.getElementById("adminPinError").classList.remove("hidden");
       }
     }
 
-    // تحديث أزرار التبويب (سؤال 1..4)
-    function updateQuestionTabs() {
-      for (let i = 0; i < 4; i++) {
-        const tab = el(`qTab${i}`);
-        const ans = currentAnswers[i];
-        if (i === currentQIndex) {
-          tab.className = "touch-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-slate-900 text-white transition shadow-sm";
-        } else if (ans) {
-          tab.className = ans.isCorrect
-            ? "touch-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 transition"
-            : "touch-btn flex-1 py-2 rounded-xl text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300 transition";
-        } else {
-          tab.className = "touch-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition";
-        }
-        tab.textContent = ans ? `سؤال ${i + 1} ${ans.isCorrect ? '✓' : '✗'}` : `سؤال ${i + 1}`;
-      }
-      el('mobilePhaseStep').textContent = `${currentQIndex + 1} / 4`;
+    function closeAdminDashboard() {
+      const dash = document.getElementById("modalAdminDashboard");
+      dash.classList.add("hidden");
+      dash.classList.remove("flex");
     }
 
-    // عرض الرسالة الحالية داخل الهاتف
-    function renderCurrentQuestion() {
-      const q = currentQuestions[currentQIndex];
-      if (!q) return;
+    function renderAdminDashboard() {
+      const records = getLocalRecords();
+      document.getElementById("dashTotalRuns").textContent = records.length;
 
-      el('msgAvatar').className = `w-9 h-9 sm:w-10 sm:h-10 rounded-full ${q.avatarBg} flex items-center justify-center font-bold text-base shrink-0`;
-      el('msgAvatar').innerHTML = `<i class="${q.icon}"></i>`;
-      el('msgSender').textContent = q.sender;
-      el('msgSub').textContent = q.sub;
-      el('msgVerifiedIcon').classList.toggle('hidden', !q.verified);
-      el('msgBody').textContent = q.body;
-      el('msgLinkWrap').textContent = q.link;
-      el('qCounterText').textContent = `رسالة ${currentQIndex + 1} من 4`;
-
-      const alertCard = el('nabeehAlertCard');
-      if (nabeehEnabled) {
-        alertCard.classList.remove('hidden');
-        if (q.isSafe) {
-          alertCard.className = "p-3.5 sm:p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950 space-y-2 shadow-md transition-all";
-          el('alertTag').className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-emerald-600 text-white";
-          el('alertTag').textContent = "✔ مصدر موثق وآمن";
-        } else {
-          alertCard.className = "p-3.5 sm:p-4 rounded-2xl border-2 border-rose-500 bg-rose-50 text-rose-950 space-y-2 shadow-lg transition-all danger-glow";
-          el('alertTag').className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-md bg-rose-600 text-white";
-          el('alertTag').textContent = "⚠ تحذير: احتيال محتمل";
-        }
-        el('alertTitle').textContent = q.alertTitle;
-        el('alertDesc').textContent = q.alertDesc;
-        el('familyGuardianRow').classList.toggle('hidden', !q.isFamilyAlert);
-      } else {
-        alertCard.classList.add('hidden');
-      }
-
-      updateQuestionTabs();
-      startQuestionTimer();
-    }
-
-    function startQuestionTimer() {
-      if (timerInterval) clearInterval(timerInterval);
-      questionStartTime = Date.now();
-      el('liveTimerBadge').textContent = "0.0 ث";
-      timerInterval = setInterval(() => {
-        const sec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
-        el('liveTimerBadge').textContent = `${sec} ث`;
-      }, 100);
-    }
-
-    window.goToQuestion = function (idx) {
-      currentQIndex = idx;
-      renderCurrentQuestion();
-    };
-
-    // بدء جولة جديدة من 4 أسئلة
-    function initRoundQuestions(resetFullParticipant = false) {
-      if (resetFullParticipant) {
-        usedScenarioIds.clear();
-        roundStats = { A: null, B: null };
-        sessionLogs = [];
-        nabeehEnabled = false; // يبدأ دائماً بدون نبيه
-        renderSessionLogs();
-        updateLiveComparisonCards();
-      }
-      currentQuestions = pickFourBalancedScenarios();
-      currentQIndex = 0;
-      currentAnswers = [null, null, null, null];
-      syncNabeehUI();
-      renderCurrentQuestion();
-    }
-
-    window.startFreshShuffledRound = function (notify = false) {
-      if (autoActivateTimer) clearInterval(autoActivateTimer);
-      el('autoActivateModal').classList.add('hidden');
-      el('autoActivateModal').classList.remove('flex');
-      initRoundQuestions(true);
-      if (notify) {
-        showToast("تم بدء جلسة مشارك جديد (4 رسائل بدون نبيه أولاً)", "fa-solid fa-shuffle text-amber-400");
-      }
-    };
-
-    window.toggleNabeeh = function () {
-      nabeehEnabled = !nabeehEnabled;
-      syncNabeehUI();
-      renderCurrentQuestion();
-      showToast(
-        nabeehEnabled ? "تم تفعيل درع نبيه (الوضع B)" : "تم إيقاف درع نبيه (الوضع A)",
-        nabeehEnabled ? "fa-solid fa-shield-halved text-emerald-400" : "fa-solid fa-shield text-slate-300"
-      );
-    };
-
-    window.switchModeWithNewQuestions = function () {
-      nabeehEnabled = !nabeehEnabled;
-      initRoundQuestions(false);
-      showToast(
-        nabeehEnabled ? "تم الانتقال للوضع B (مع نبيه) بـ 4 رسائل جديدة" : "تم الانتقال للوضع A (بدون نبيه) بـ 4 رسائل جديدة",
-        "fa-solid fa-repeat text-indigo-400"
-      );
-    };
-
-    window.toggleSeniorMode = function () {
-      seniorMode = !seniorMode;
-      el('phoneContainer').classList.toggle('senior-mode-active', seniorMode);
-      const btn = el('seniorToggleBtn');
-      btn.textContent = seniorMode ? "مُفعّل ✓" : "تفعيل";
-      btn.className = seniorMode
-        ? "touch-btn px-3.5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-extrabold transition shrink-0"
-        : "touch-btn px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-extrabold transition shrink-0";
-    };
-
-    window.speakCurrentNabeehAlert = function () {
-      if (!('speechSynthesis' in window)) {
-        showToast("المتصفح لا يدعم القراءة الصوتية", "fa-solid fa-circle-exclamation text-amber-400");
-        return;
-      }
-      const q = currentQuestions[currentQIndex];
-      if (!q) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(`${q.alertTitle}. ${q.alertDesc}`);
-      utter.lang = "ar-SA";
-      utter.rate = 0.92;
-      window.speechSynthesis.speak(utter);
-    };
-
-    // اتخاذ القرار (آمن أو احتيال)
-    window.submitDecision = function (decision) {
-      const q = currentQuestions[currentQIndex];
-      if (!q) return;
-
-      const elapsedSec = Math.max(0.5, +((Date.now() - questionStartTime) / 1000).toFixed(1));
-      const userChoseSafe = decision === 'proceed';
-      const isCorrect = userChoseSafe === q.isSafe;
-      const modeKey = nabeehEnabled ? 'B' : 'A';
-
-      currentAnswers[currentQIndex] = {
-        isCorrect,
-        timeSec: elapsedSec,
-        sender: q.sender,
-        isSafe: q.isSafe
-      };
-
-      sessionLogs.unshift({
-        mode: modeKey,
-        sender: q.sender,
-        isCorrect,
-        timeSec: elapsedSec
-      });
-      renderSessionLogs();
-
-      showToast(
-        isCorrect
-          ? `قرار صحيح! (${elapsedSec} ث)`
-          : `قرار خاطئ! ${q.isSafe ? 'الرسالة آمنة وموثقة' : 'هذه رسالة احتيال!'}`,
-        isCorrect ? "fa-solid fa-circle-check text-emerald-400" : "fa-solid fa-triangle-exclamation text-rose-400"
-      );
-
-      // تحديث الإحصائيات الفورية للجولة الجارية
-      const answeredList = currentAnswers.filter(Boolean);
-      const correctSoFar = answeredList.filter((a) => a.isCorrect).length;
-      const avgTimeSoFar = +(answeredList.reduce((sum, a) => sum + a.timeSec, 0) / answeredList.length).toFixed(1);
-
-      roundStats[modeKey] = {
-        answered: answeredList.length,
-        correct: correctSoFar,
-        accuracy: Math.round((correctSoFar / answeredList.length) * 100),
-        avgTime: avgTimeSoFar
-      };
-      updateLiveComparisonCards();
-
-      // التحقق هل اكتملت الأسئلة الأربعة للجولة الحالية
-      if (answeredList.length === 4) {
-        if (timerInterval) clearInterval(timerInterval);
-        updateQuestionTabs();
-        handleCompletedRound(modeKey, roundStats[modeKey]);
+      if (records.length === 0) {
+        document.getElementById("dashAccA").textContent = "0%";
+        document.getElementById("dashTimeA").textContent = "السرعة: 0.0 ث";
+        document.getElementById("dashAccB").textContent = "0%";
+        document.getElementById("dashTimeB").textContent = "السرعة: 0.0 ث";
+        document.getElementById("dashAvgRating").textContent = "--";
+        document.getElementById("dashTableBody").innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد سجلات محفوظة على هذا المتصفح بعد.</td></tr>`;
         return;
       }
 
-      // الانتقال للسؤال التالي غير المجاب
-      const nextIdx = currentAnswers.findIndex((a, idx) => idx > currentQIndex && !a);
-      const fallbackIdx = currentAnswers.findIndex((a) => !a);
-      currentQIndex = nextIdx !== -1 ? nextIdx : fallbackIdx;
-      renderCurrentQuestion();
-    };
+      const avgAccA = Math.round(records.reduce((s, r) => s + r.accA, 0) / records.length);
+      const avgTimeA = (records.reduce((s, r) => s + r.timeA, 0) / records.length).toFixed(1);
+      const avgAccB = Math.round(records.reduce((s, r) => s + r.accB, 0) / records.length);
+      const avgTimeB = (records.reduce((s, r) => s + r.timeB, 0) / records.length).toFixed(1);
 
-    // معالجة انتهاء جولة من 4 أسئلة (التفعيل التلقائي لنبيه بعد الجولة A)
-    async function handleCompletedRound(modeKey, stats) {
-      await persistRoundToCloud(modeKey, stats);
+      const ratedItems = records.filter(r => typeof r.rating === "number");
+      const avgRating = ratedItems.length
+        ? (ratedItems.reduce((s, r) => s + r.rating, 0) / ratedItems.length).toFixed(1) + " / 5"
+        : "لا يوجد";
 
-      if (modeKey === 'A') {
-        // انتهى المستخدم من الاختبار بدون نبيه -> تفعيل نبيه تلقائياً للانتقال للجولة B
-        el('roundASummaryText').textContent = `نتيجتك بدون نبيه: ${stats.correct}/4 (دقة ${stats.accuracy}% • متوسط ${stats.avgTime} ث)`;
-        const modal = el('autoActivateModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+      document.getElementById("dashAccA").textContent = `${avgAccA}%`;
+      document.getElementById("dashTimeA").textContent = `السرعة: ${avgTimeA} ث`;
+      document.getElementById("dashAccB").textContent = `${avgAccB}%`;
+      document.getElementById("dashTimeB").textContent = `السرعة: ${avgTimeB} ث`;
+      document.getElementById("dashAvgRating").textContent = avgRating;
 
-        if (autoActivateTimer) clearInterval(autoActivateTimer);
-        const durationMs = 3000;
-        const startTs = Date.now();
-        el('autoCountdownNum').textContent = "3";
-        el('autoProgressFill').style.width = "0%";
-
-        autoActivateTimer = setInterval(() => {
-          const elapsed = Date.now() - startTs;
-          const pct = Math.min(100, (elapsed / durationMs) * 100);
-          const remSec = Math.max(1, Math.ceil((durationMs - elapsed) / 1000));
-          el('autoProgressFill').style.width = `${pct}%`;
-          el('autoCountdownNum').textContent = String(remSec);
-
-          if (elapsed >= durationMs) {
-            window.activateNabeehNow();
-          }
-        }, 80);
-      } else {
-        // انتهى المستخدم من الجولة الثانية (مع نبيه) -> عرض المقارنة النهائية
-        showFinalComparisonModal();
-      }
-    }
-
-    window.activateNabeehNow = function () {
-      if (autoActivateTimer) {
-        clearInterval(autoActivateTimer);
-        autoActivateTimer = null;
-      }
-      const modal = el('autoActivateModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-
-      nabeehEnabled = true;
-      // تفعيل وضع كبار السن تلقائياً إذا اختار المشارك فئة كبار السن
-      if (el('testerAge').value === "كبار السن (+55)" && !seniorMode) {
-        window.toggleSeniorMode();
-      }
-
-      initRoundQuestions(false);
-      showToast("🛡️ تم تفعيل درع نبيه تلقائياً! ابدأ الجولة الثانية", "fa-solid fa-shield-halved text-emerald-400");
-    };
-
-    function showFinalComparisonModal() {
-      const sA = roundStats.A || { accuracy: 0, avgTime: 0, correct: 0 };
-      const sB = roundStats.B || { accuracy: 0, avgTime: 0, correct: 0 };
-
-      el('finalAccA').textContent = `${sA.accuracy}%`;
-      el('finalTimeA').textContent = `${sA.correct}/4 • ${sA.avgTime} ث`;
-      el('finalAccB').textContent = `${sB.accuracy}%`;
-      el('finalTimeB').textContent = `${sB.correct}/4 • ${sB.avgTime} ث`;
-
-      const diff = sB.accuracy - sA.accuracy;
-      const banner = el('finalDeltaBanner');
-      if (diff > 0) {
-        banner.className = "p-3 rounded-2xl bg-emerald-100 text-emerald-900 text-xs sm:text-sm font-extrabold";
-        banner.textContent = `🎉 ارتفعت دقة اكتشاف الاحتيال بنسبة +${diff}% بمساعدة درع نبيه!`;
-      } else if (diff === 0) {
-        banner.className = "p-3 rounded-2xl bg-blue-100 text-blue-900 text-xs sm:text-sm font-extrabold";
-        banner.textContent = `🛡️ حافظت على دقة ${sB.accuracy}% مع تنبيهات نبيه الفورية!`;
-      } else {
-        banner.className = "p-3 rounded-2xl bg-slate-100 text-slate-800 text-xs sm:text-sm font-extrabold";
-        banner.textContent = `📊 تم تسجيل نتائج الجولتين بنجاح في قاعدة البيانات.`;
-      }
-
-      const modal = el('finalCompareModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    window.closeFinalCompareModal = function () {
-      const modal = el('finalCompareModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    function updateLiveComparisonCards() {
-      if (roundStats.A) {
-        el('liveCountA').textContent = `${roundStats.A.correct}/4`;
-        el('liveAccA').textContent = `${roundStats.A.accuracy}%`;
-        el('liveTimeA').textContent = `${roundStats.A.avgTime} ث`;
-      } else {
-        el('liveCountA').textContent = "0/4";
-        el('liveAccA').textContent = "--%";
-        el('liveTimeA').textContent = "-- ث";
-      }
-
-      if (roundStats.B) {
-        el('liveCountB').textContent = `${roundStats.B.correct}/4`;
-        el('liveAccB').textContent = `${roundStats.B.accuracy}%`;
-        el('liveTimeB').textContent = `${roundStats.B.avgTime} ث`;
-      } else {
-        el('liveCountB').textContent = "0/4";
-        el('liveAccB').textContent = "--%";
-        el('liveTimeB').textContent = "-- ث";
-      }
-    }
-
-    function renderSessionLogs() {
-      const box = el('sessionLogContainer');
-      if (!sessionLogs.length) {
-        box.innerHTML = `<p class="text-slate-400 text-center py-6">ابدأ بالإجابة على الرسالة المعروضة في الهاتف!</p>`;
-        return;
-      }
-      box.innerHTML = sessionLogs.map((item) => `
-        <div class="flex items-center justify-between p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-rose-50/70 border-rose-200'}">
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="text-[10px] font-black px-1.5 py-0.5 rounded ${item.mode === 'B' ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-white'}">${item.mode}</span>
-            <span class="font-bold text-slate-800 truncate">${escapeHtml(item.sender)}</span>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <span class="text-[11px] font-mono text-slate-500">${item.timeSec} ث</span>
-            <span class="font-extrabold ${item.isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${item.isCorrect ? 'صحيح ✓' : 'خطأ ✗'}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // حفظ النتيجة في Firestore + LocalStorage + Google Sheets
-    async function persistRoundToCloud(modeKey, stats) {
-      const participantName = el('testerName').value.trim() || "مشارك مجهول";
-      const ageGroup = el('testerAge').value || "غير محدد";
-      const now = new Date();
-      const timeLabel = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-
-      const record = {
-        participantName,
-        ageGroup,
-        mode: modeKey === 'B' ? 'with_nabeeh' : 'without_nabeeh',
-        correctCount: stats.correct,
-        accuracy: stats.accuracy,
-        avgTimeSec: stats.avgTime,
-        timeLabel,
-        createdAtMs: Date.now()
-      };
-
-      // 1) الحفظ المحلي الفوري
-      const localList = loadLocalRecords();
-      localList.unshift(record);
-      saveLocalRecords(localList);
-      window.cloudRecords = localList;
-      window.renderAdminDashboard();
-
-      // 2) الحفظ في Firebase Firestore
-      if (db && firestoreCollectionRef) {
-        try {
-          await addDoc(firestoreCollectionRef, {
-            ...record,
-            createdAt: serverTimestamp()
-          });
-        } catch (err) {
-          console.warn("Firestore save error:", err);
-        }
-      }
-
-      // 3) الإرسال إلى Google Sheets Webhook إن وُجد
-      const webhookUrl = getGoogleSheetWebhook();
-      if (webhookUrl) {
-        fetch(webhookUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({
-            name: record.participantName,
-            age: record.ageGroup,
-            mode: modeKey === 'B' ? "مع نبيه (B)" : "بدون نبيه (A)",
-            score: `${record.correctCount}/4 (${record.accuracy}%)`,
-            time: `${record.avgTimeSec} ث`,
-            timestamp: now.toISOString()
-          })
-        }).catch(() => {});
-      }
-    }
-
-    // لوحة المشرف
-    window.openAdminPinModal = function () {
-      el('adminPinInput').value = "";
-      el('pinErrorText').classList.add('hidden');
-      const modal = el('adminPinModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      setTimeout(() => el('adminPinInput').focus(), 100);
-    };
-
-    window.closeAdminPinModal = function () {
-      const modal = el('adminPinModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    window.verifyAdminPin = function () {
-      if (el('adminPinInput').value.trim() !== ADMIN_PIN) {
-        el('pinErrorText').classList.remove('hidden');
-        return;
-      }
-      window.closeAdminPinModal();
-      window.renderAdminDashboard();
-      const modal = el('adminDashboardModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    };
-
-    window.closeAdminDashboard = function () {
-      const modal = el('adminDashboardModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    window.renderAdminDashboard = function () {
-      const list = window.cloudRecords || [];
-      el('headerTotalBadge').textContent = String(list.length);
-      el('adminTotalRounds').textContent = String(list.length);
-
-      const listA = list.filter((r) => r.mode === 'without_nabeeh');
-      const listB = list.filter((r) => r.mode === 'with_nabeeh');
-
-      const avg = (arr, key) => arr.length ? arr.reduce((s, r) => s + (Number(r[key]) || 0), 0) / arr.length : 0;
-
-      const accA = Math.round(avg(listA, 'accuracy'));
-      const timeA = avg(listA, 'avgTimeSec').toFixed(1);
-      const accB = Math.round(avg(listB, 'accuracy'));
-      const timeB = avg(listB, 'avgTimeSec').toFixed(1);
-
-      el('adminCountA').textContent = `${listA.length} جولات`;
-      el('adminAccA').textContent = `${accA}%`;
-      el('adminTimeA').textContent = `${timeA} ث`;
-
-      el('adminCountB').textContent = `${listB.length} جولات`;
-      el('adminAccB').textContent = `${accB}%`;
-      el('adminTimeB').textContent = `${timeB} ث`;
-
-      el('barTextA').textContent = `${accA}%`;
-      el('barFillA').style.width = `${accA}%`;
-      el('barTextB').textContent = `${accB}%`;
-      el('barFillB').style.width = `${accB}%`;
-
-      const tbody = el('adminTableBody');
-      if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">لا توجد نتائج مسجلة بعد.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = list.map((r) => `
+      document.getElementById("dashTableBody").innerHTML = records.map(r => `
         <tr class="hover:bg-slate-50">
-          <td class="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">${escapeHtml(r.participantName)}</td>
-          <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${escapeHtml(r.ageGroup)}</td>
-          <td class="py-2.5 px-3 whitespace-nowrap">
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-extrabold ${r.mode === 'with_nabeeh' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-              ${r.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)'}
-            </span>
-          </td>
-          <td class="py-2.5 px-3 font-extrabold text-slate-800 whitespace-nowrap">${r.correctCount}/4 (${r.accuracy}%)</td>
-          <td class="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap">${r.avgTimeSec} ث</td>
-          <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${escapeHtml(r.timeLabel || '')}</td>
+          <td class="py-2.5 px-3 font-extrabold text-slate-900">${escapeHtml(r.name)}</td>
+          <td class="py-2.5 px-3 text-slate-600">${escapeHtml(r.age)}</td>
+          <td class="py-2.5 px-3 font-bold text-rose-700">${r.correctA}/4 (${r.accA}%) • ${r.timeA}ث</td>
+          <td class="py-2.5 px-3 font-extrabold text-emerald-700">${r.correctB}/4 (${r.accB}%) • ${r.timeB}ث</td>
+          <td class="py-2.5 px-3 font-bold text-amber-600">${r.rating ? r.rating + "/5" : "-"}</td>
+          <td class="py-2.5 px-3 text-slate-500 max-w-[200px] truncate">${escapeHtml(r.comment || "-")}</td>
         </tr>
-      `).join('');
-    };
+      `).join("");
+    }
 
-    window.clearAllCloudRecords = async function () {
-      if (!confirm("هل أنت متأكد من مسح جميع السجلات التجريبية؟")) return;
-      saveLocalRecords([]);
-      if (db && firestoreCollectionRef && window.cloudRecords) {
-        for (const rec of window.cloudRecords) {
-          if (rec._docId) {
-            try {
-              await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'nabeeh_ab_results', rec._docId));
-            } catch (e) {}
-          }
-        }
-      }
-      window.cloudRecords = [];
-      window.renderAdminDashboard();
-      showToast("تم مسح جميع السجلات", "fa-solid fa-trash-can text-rose-400");
-    };
+    function clearLocalDashboardData() {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      renderAdminDashboard();
+      showToast("تم مسح السجل المحلي بنجاح.", "success");
+    }
 
-    window.exportResultsCsv = function () {
-      const list = window.cloudRecords || [];
-      if (!list.length) {
-        showToast("لا توجد نتائج لتصديرها", "fa-solid fa-circle-info text-amber-400");
+    function exportDashboardCsv() {
+      const records = getLocalRecords();
+      if (records.length === 0) {
+        showToast("لا توجد بيانات لتصديرها.", "warning");
         return;
       }
-      const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-      const headers = ["المشارك,الفئة العمرية,الوضع,الإجابات الصحيحة,الدقة %,متوسط السرعة (ث),التوقيت"];
-      const rows = list.map((r) => [
-        q(r.participantName),
-        q(r.ageGroup),
-        q(r.mode === 'with_nabeeh' ? 'مع نبيه (B)' : 'بدون نبيه (A)'),
-        r.correctCount,
-        r.accuracy,
-        r.avgTimeSec,
-        q(r.timeLabel)
-      ].join(","));
-      const csv = "\uFEFF" + [...headers, ...rows].join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "nabeeh_ab_results.csv";
-      a.click();
-    };
+      const headers = ["المشارك", "الفئة العمرية", "دقة بدون نبيه %", "سرعة بدون نبيه (ث)", "دقة مع نبيه %", "سرعة مع نبيه (ث)", "التقييم", "الملاحظات"];
+      const rows = records.map(r => [
+        `"${(r.name || "").replace(/"/g, '""')}"`,
+        `"${r.age || ""}"`,
+        r.accA,
+        r.timeA,
+        r.accB,
+        r.timeB,
+        r.rating || "",
+        `"${(r.comment || "").replace(/"/g, '""')}"`
+      ]);
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "nabeeh_experiment_results.csv";
+      link.click();
+    }
 
-    window.copySummaryReport = function () {
-      const list = window.cloudRecords || [];
-      const listA = list.filter((r) => r.mode === 'without_nabeeh');
-      const listB = list.filter((r) => r.mode === 'with_nabeeh');
-      const avg = (arr, key) => arr.length ? arr.reduce((s, r) => s + (Number(r[key]) || 0), 0) / arr.length : 0;
-
-      const accA = Math.round(avg(listA, 'accuracy'));
-      const timeA = avg(listA, 'avgTimeSec').toFixed(1);
-      const accB = Math.round(avg(listB, 'accuracy'));
-      const timeB = avg(listB, 'avgTimeSec').toFixed(1);
-      const gain = Math.max(0, accB - accA);
-
-      const summary = [
-        "📊 ملخص نتائج اختبار النموذج الأولي — تطبيق نبيه (IND1101)",
-        `• إجمالي الجولات المسجلة: ${list.length}`,
-        `• بدون نبيه (A): دقة ${accA}% | متوسط سرعة القرار ${timeA} ث (${listA.length} جولات)`,
-        `• مع درع نبيه (B): دقة ${accB}% | متوسط سرعة القرار ${timeB} ث (${listB.length} جولات)`,
-        `• نسبة التحسن في كشف الاحتيال: +${gain}%`
-      ].join("\n");
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(summary)
-          .then(() => showToast("تم نسخ الملخص لشرائح العرض!", "fa-solid fa-copy text-emerald-400"))
-          .catch(() => prompt("انسخ الملخص التالي:", summary));
-      } else {
-        prompt("انسخ الملخص التالي:", summary);
+    function copyPresentationSummary() {
+      const records = getLocalRecords();
+      if (records.length === 0) {
+        showToast("لا توجد سجلات لنسخها بعد.", "warning");
+        return;
       }
-    };
+      const avgAccA = Math.round(records.reduce((s, r) => s + r.accA, 0) / records.length);
+      const avgTimeA = (records.reduce((s, r) => s + r.timeA, 0) / records.length).toFixed(1);
+      const avgAccB = Math.round(records.reduce((s, r) => s + r.accB, 0) / records.length);
+      const avgTimeB = (records.reduce((s, r) => s + r.timeB, 0) / records.length).toFixed(1);
 
-    function escapeHtml(str) {
-      return String(str ?? '').replace(/[&<>"']/g, (ch) => ({
-        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
-      }[ch]));
+      const summary = `📊 ملخص نتائج اختبار النموذج الأولي لتطبيق (نبيه) — IND1101:
+• عدد المشاركين المكتملين: ${records.length} مشاركين
+• دقة اكتشاف الاحتيال بدون نبيه (A): ${avgAccA}% (متوسط السرعة: ${avgTimeA} ثانية)
+• دقة اكتشاف الاحتيال مع درع نبيه (B): ${avgAccB}% (متوسط السرعة: ${avgTimeB} ثانية)
+• نسبة التحسن في الدقة: +${Math.max(0, avgAccB - avgAccA)}%`;
+
+      const tempTa = document.createElement("textarea");
+      tempTa.value = summary;
+      document.body.appendChild(tempTa);
+      tempTa.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempTa);
+      showToast("تم نسخ ملخص النتائج للعرض التقديمي!", "success");
     }
 
-    let toastTimeout = null;
-    function showToast(text, iconClass = "fa-solid fa-circle-info text-sky-400") {
-      const banner = el('toastBanner');
-      el('toastIcon').innerHTML = `<i class="${iconClass}"></i>`;
-      el('toastText').textContent = text;
-      banner.classList.remove('hidden');
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => banner.classList.add('hidden'), 2400);
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
     }
 
-    // التشغيل الأولي
-    initCloudDatabase();
-    initRoundQuestions(true);
+    // إشعارات منبثقة أنيقة
+    let toastTimer = null;
+    function showToast(msg, type = "success") {
+      const box = document.getElementById("toastNotification");
+      const icon = document.getElementById("toastIcon");
+      const text = document.getElementById("toastMessage");
+
+      text.textContent = msg;
+      if (type === "danger") {
+        icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+      } else if (type === "warning") {
+        icon.innerHTML = '<i class="fa-solid fa-circle-info text-amber-400"></i>';
+      } else {
+        icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+      }
+
+      box.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add("hidden");
+      }, 3400);
+    }
   </script>
 </body>
 </html>
